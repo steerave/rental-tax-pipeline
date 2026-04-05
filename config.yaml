@@ -41,3 +41,42 @@ bootstrap:
   date_window_days: 3
   description_fuzzy_threshold: 0.72  # 0..1 ratio, ratcheted in Phase 2
   min_confidence_to_auto_learn: 0.80
+
+# Maps Rent QC category strings (left) to LTR template row labels (right).
+# null means exclude from the template (e.g., security deposits, owner distributions).
+rentqc_to_ltr_template:
+  # Income
+  "Rent Income": "Sales revenue"
+  "Prepaid Rent": "Sales revenue"
+  "Late Fee": "late fees revenue"
+  "Laundry Income": "Laundry revenue"
+  "Security Deposits Clearing": null
+  "Security Deposits": null
+
+  # Operating expenses
+  "Management Fees": "Management Fees"
+  "Lawn and Snow Care": "Lawn and Snow Care"
+  "Water": "Utilities"
+  "Electricity & Gas": "Utilities"
+  "Garbage and Recycling": "Utilities"
+  "Sewer": "Utilities"
+  "Pest Control": "Pest Control"
+  "Plumbing": "Plumbing"
+  "Carpet Cleaning": "Cleaning Fees"
+  "HVAC (Heat, Ventilation, Air)": "Repairs and Maintenance"
+  "Rental License": "Licenses and Fees"
+  "Lease Fee": "Licenses and Fees"
+  "Legal Expenses": "legal expenses"
+  "Maintenance Labor": "Repairs and Maintenance"
+
+  # Maintenance / turn-over
+  "Repair (IA)": "Repairs and Maintenance"
+  "Repair (IL)": "Repairs and Maintenance"
+  "Cleaning (IA)": "Cleaning Fees"
+  "Cleaning (IL)": "Cleaning Fees"
+  "Supply and Materials": "Supplies"
+  "Stock Materials": "Supplies"
+  "Postage": "Postages"
+
+  # Internal — exclude
+  "Owner Distributions / S corp Distributions": null
