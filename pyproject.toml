@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "taxauto"
+version = "0.1.0"
+description = "Rental business tax automation pipeline: PDF ingestion, vendor learning, human-in-the-loop review, accountant-ready Excel output."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Sarun Teeravechyan" }]
+dependencies = [
+    "pdfplumber>=0.11",
+    "pytesseract>=0.3.10",
+    "Pillow>=10.0",
+    "pdf2image>=1.17",
+    "gspread>=6.0",
+    "google-auth>=2.29",
+    "openpyxl>=3.1",
+    "PyYAML>=6.0",
+    "python-dotenv>=1.0",
+    "rapidfuzz>=3.9",
+    "reportlab>=4.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+taxauto = "taxauto.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

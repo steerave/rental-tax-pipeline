@@ -1,0 +1,35 @@
+# Secrets & credentials
+.env
+.env.*
+!.env.template
+*service_account*.json
+credentials.json
+
+# Tax data — never commit personal/client financial documents
+years/*/inputs/
+years/*/outputs/
+years/*/intermediate/
+years/*/review_log.csv
+
+# Logs & local Claude settings
+logs/
+.claude/settings.local.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+build/
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

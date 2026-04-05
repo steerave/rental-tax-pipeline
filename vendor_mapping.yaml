@@ -1,0 +1,14 @@
+# Global vendor → category mapping. Committed to git and grows every year
+# through bootstrap and human review decisions.
+#
+# Structure:
+#   vendors:
+#     <normalized_vendor_key>:
+#       category: STR | LTR | Personal
+#       confidence: 0.0–1.0
+#       occurrences: int
+#       learned_from: [year, ...]
+#       ambiguous: bool   # if true, always route to review
+#
+# Empty until bootstrap runs against a prior year.
+vendors: {}

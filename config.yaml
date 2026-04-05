@@ -1,0 +1,43 @@
+# Rental Tax Pipeline — project configuration
+#
+# Paths are relative to the project root unless absolute.
+
+templates:
+  str: templates/str_template.xlsx
+  ltr: templates/ltr_template.xlsx
+
+# Where per-year data lives. {year} is substituted at runtime.
+year_paths:
+  root: years/{year}
+  bank_inputs: years/{year}/inputs/bank
+  pm_ltr_inputs: years/{year}/inputs/pm_ltr
+  pm_str_inputs: years/{year}/inputs/pm_str
+  intermediate: years/{year}/intermediate
+  outputs: years/{year}/outputs
+  review_log: years/{year}/review_log.csv
+
+# Category vocabulary. Used for Sheet dropdown validation and writer routing.
+categories:
+  primary:
+    - STR
+    - LTR
+    - Personal
+    - Skip
+    - Split
+  # Sub-categories within a side (expanded in Phase 2 once real templates are known)
+  str_subcategories: []
+  ltr_subcategories: []
+
+# Property manager identities — used by the PM parser and double-count guard.
+property_managers:
+  ltr:
+    # name_contains: substrings found on bank descriptions for PM payouts
+    name_contains: []
+  str:
+    name_contains: []
+
+# Bootstrap matching thresholds
+bootstrap:
+  date_window_days: 3
+  description_fuzzy_threshold: 0.72  # 0..1 ratio, ratcheted in Phase 2
+  min_confidence_to_auto_learn: 0.80
