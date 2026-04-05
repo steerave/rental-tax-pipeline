@@ -23,6 +23,7 @@ gitignored.
 5. Real Vrbo/Airbnb IDs → `1111111`, `2222222`
 6. Dollar amounts → **keep as-is**; they're not PII and the reconciliation
    tests need realistic numbers
+7. Real phone numbers / emails → `555-0100`, `user@example.com`
 
 Never commit real statements. Run `git diff --cached` before every commit
 that touches `tests/fixtures/`.

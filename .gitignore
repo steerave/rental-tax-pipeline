@@ -39,3 +39,11 @@ Thumbs.db
 # But never allow raw discovery dumps
 tests/fixtures/**/_txt_*/
 tests/fixtures/**/_raw_*
+tests/fixtures/**/raw/
+tests/fixtures/**/dump/
+tests/fixtures/**/*.raw.txt
+# And never allow secrets under fixtures
+tests/fixtures/**/.env
+tests/fixtures/**/.env.*
+tests/fixtures/**/*service_account*.json
+tests/fixtures/**/credentials.json
