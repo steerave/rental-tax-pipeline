@@ -3,12 +3,13 @@
 # Paths are relative to the project root unless absolute.
 
 templates:
-  str: templates/str_template.xlsx
-  ltr: templates/ltr_template.xlsx
+  str: "years/2024/outputs/2024 - STR - Income Expense summary .xlsx"
+  ltr: "years/2024/outputs/LTR- Income Expense summary2024.xlsx"
 
 # Where per-year data lives. {year} is substituted at runtime.
 year_paths:
   root: years/{year}
+  inputs: years/{year}/inputs
   bank_inputs: years/{year}/inputs/bank
   pm_ltr_inputs: years/{year}/inputs/pm_ltr
   pm_str_inputs: years/{year}/inputs/pm_str

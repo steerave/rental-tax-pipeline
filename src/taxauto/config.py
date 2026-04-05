@@ -20,6 +20,7 @@ class YearPaths:
     """Resolved absolute paths for a single tax year."""
 
     root: Path
+    inputs: Path
     bank_inputs: Path
     pm_ltr_inputs: Path
     pm_str_inputs: Path
@@ -57,8 +58,15 @@ class Config:
             relative = Path(template.format(year=year))
             return (self.project_root / relative).resolve()
 
+        # Derive inputs from root if not explicitly configured (backward compat).
+        inputs_template = self._year_path_templates.get(
+            "inputs",
+            self._year_path_templates["root"] + "/inputs",
+        )
+
         return YearPaths(
             root=resolve(self._year_path_templates["root"]),
+            inputs=resolve(inputs_template),
             bank_inputs=resolve(self._year_path_templates["bank_inputs"]),
             pm_ltr_inputs=resolve(self._year_path_templates["pm_ltr_inputs"]),
             pm_str_inputs=resolve(self._year_path_templates["pm_str_inputs"]),
