@@ -1,0 +1,12 @@
+# Per-property interest expense by tax year.
+# Source: Form 1098 from each property's lender.
+# Copy to interest_expense.yaml (gitignored) and fill in.
+
+2024:
+  "15 Belden": 0.00
+  "27 Farmstead Dr": 0.00
+  "20 Valleywood Ln": 0.00
+  "17 Oak Glen": 0.00
+  "1015 39th St": 0.00
+  "1210 College Ave": 0.00
+  "308 Lincoln Ave": 0.00

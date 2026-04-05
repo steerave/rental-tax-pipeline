@@ -5,6 +5,9 @@
 *service_account*.json
 credentials.json
 
+# Interest expense (personal data from Form 1098)
+interest_expense.yaml
+
 # Tax data — never commit personal/client financial documents
 years/*/inputs/
 years/*/outputs/
