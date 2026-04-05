@@ -1,0 +1,92 @@
+
+===== PAGE 1 of 6 =====
+000000399999999
+CUSTOMER SERVICE INFORMATION
+32000000010301357210
+December 30, 2023throughJanuary 31, 2024
+JPMorgan Chase Bank, N.A.
+Account Number:
+P O Box 182051
+Columbus, OH 43218-2051
+Web site: Chase.com
+Service Center: 1-800-242-7338
+00127531DRE 111 211 03224 NNNNNNNNNNN 1 000000000 640000 Para Espanol: 1-888-622-4273
+SAMPLE HOLDINGS LLC International Calls: 555-0100
+123 MAIN ST We accept operator relay calls
+ANYTOWN IA52722-0000
+*start*summary
+Chase Business Complete Checking
+CHECKING SUMMARY
+INSTANCES AMOUNT
+Beginning Balance $37,969.40
+Deposits and Additions 20 18,085.21
+Checks Paid 5 -1,016.38
+Electronic Withdrawals 38 -19,117.62
+Ending Balance 63 $35,920.61
+*end*summary
+Page of
+1 6
+===== PAGE 2 of 6 =====
+December 30, 2023throughJanuary 31, 2024
+Account Number:
+000000399999999
+*start*deposits and additions
+DEPOSITS AND ADDITIONS
+DATE DESCRIPTION AMOUNT
+01/02 Orig CO Name:Vrbo Orig ID:9872667522 Desc Date:240102 CO Entry $5,849.66
+Descr:Payment Sec:CCD Trace#:031101116782179 Eed:240102 Ind
+ID:000000653312466 Ind Name:Sample Vacations
+¢"Vrbo,1111111,Anytown,IA,52722,US"! 240102103110 Trn:
+0026782179Tc
+01/02 Orig CO Name:Airbnb 4977 Orig ID:1463165559 Desc Date:Jan 01 CO Entry 2,176.10
+Descr:Airbnb Sec:PPD Trace#:028000086856930 Eed:240102 Ind ID:
+Ind Name:John Smith Trn: 0026856930Tc
+01/02 Orig CO Name:Vrbo Orig ID:9872667522 Desc Date:240102 CO Entry 823.92
+Descr:Payment Sec:CCD Trace#:031101117059365 Eed:240102 Ind
+ID:000000653869631 Ind Name:Sample Vacations
+¢"Vrbo,2222222,Anytown,IA,52722,US"! 240102191732 Trn:
+0027059365Tc
+01/03 Orig CO Name:Airbnb 4977 Orig ID:1463165559 Desc Date:Jan 03 CO Entry 378.30
+Descr:Airbnb Sec:PPD Trace#:028000088326658 Eed:240103 Ind ID:
+Ind Name:John Smith Trn: 0038326658Tc
+01/09 Orig CO Name:Vrbo Orig ID:9872667522 Desc Date:240108 CO Entry 475.08
+Descr:Payment Sec:CCD Trace#:031101110066599 Eed:240109 Ind
+ID:000000655871391 Ind Name:Sample Vacations
+¢"Vrbo,3333333,Anytown,IA,52722,US"! 240108102514 Trn:
+0090066599Tc
+01/16 Orig CO Name:Rent Qc, LLC Orig ID:9000287338 Desc Date:011624 CO Entry 4,705.95
+Descr:Sigonfile Sec:CCD Trace#:111926086117820 Eed:240116 Ind ID:X15682
+Ind Name:Sample Holdings LLC
+555-0100 Trn: 0166117820Tc
+Total Deposits and Additions $18,085.21
+*end*deposits and additions
+*start*checks paid section3
+CHECKS PAID
+DATE
+CHECK NO. DESCRIPTION PAID AMOUNT
+1025 ^ 01/23 $75.00
+1028 *^ 01/16 649.68
+1029 ^ 01/30 40.00
+1030 ^ 01/30 153.47
+1031 ^ 01/31 98.23
+Total Checks Paid $1,016.38
+If you see a description in the Checks Paid section, it means that we received only electronic information about the check,
+not the original or an image of the check. As a result, we're not able to return the check to you or show you an image.
+*end*checks^ paid sectio n3An image of this check may be available for you to view on Chase.com.
+*start*electronic withdrawal
+ELECTRONIC WITHDRAWALS
+DATE DESCRIPTION AMOUNT
+01/02 12/30 Online Payment 19437196755 To Territory & Canyon $160.00
+01/02 12/31 Online Payment 19450462616 To Territory & Canyon 100.00
+01/02 Orig CO Name:Venmo Orig ID:3264681992 Desc Date:231231 CO Entry 155.00
+Descr:Payment Sec:Web Trace#:091000012927398 Eed:240102 Ind ID:1031633163696
+Ind Name:John Smith Trn: 0022927398Tc
+01/04 01/04 Online Payment 19486096793 To Territory & Canyon 100.00
+01/05 01/05 Online Payment 19200162690 To First Community Bank of Anytown 1,642.36
+01/10 01/10 Online Payment 19265430532 To Green State Credit Union 2,899.00
+01/17 01/17 Online Payment 19600397868 To Engle Plumbing 101.00
+01/31 01/31 Online Transfer To Chk ...9018 Transaction#: 19423890638 780.28
+Total Electronic Withdrawals $19,117.62
+*end*electronic withdrawal
+Page of
+2 6
