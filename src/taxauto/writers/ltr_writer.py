@@ -1,53 +1,79 @@
-"""LTR Excel writer.
+"""LTR Excel writer — fills the accountant's per-property P&L template.
 
-Fills the accountant's blank LTR template with:
-1. Every entry from the property-manager report (authoritative).
-2. Every bank transaction tagged ``LTR`` that does **not** collide with a
-   PM-report line (double-count guard).
+Phase 2 design: LTR sheets have drifting row positions between properties.
+The writer scans column C per sheet to build a dynamic {label: row} map.
 """
 
 from __future__ import annotations
 
+import warnings
+from decimal import Decimal
 from pathlib import Path
-from typing import Iterable, List
+from typing import Dict, Optional, Sequence
 
-from taxauto.categorize.mapper import TaggedTransaction
-from taxauto.guards.double_count import detect_double_counts
-from taxauto.parsers.pm_ltr import PMEntry
+import openpyxl
+from openpyxl.worksheet.worksheet import Worksheet
 
-from ._common import append_rows, copy_template
+from .template_copy import copy_and_clear_values
+
+
+def scan_label_rows(ws: Worksheet) -> Dict[str, int]:
+    """Scan column C and return {label_text: row_number} for all non-empty cells."""
+    out: Dict[str, int] = {}
+    for row in range(1, ws.max_row + 1):
+        v = ws[f"C{row}"].value
+        if v is not None:
+            label = str(v).strip()
+            if label:
+                out[label] = row
+    return out
+
+
+def _find_row_case_insensitive(
+    label_rows: Dict[str, int], target: str
+) -> Optional[int]:
+    target_lower = target.lower()
+    for label, row in label_rows.items():
+        if label.lower() == target_lower:
+            return row
+    return None
 
 
 def write_ltr_workbook(
     *,
     template_path: Path,
     output_path: Path,
-    tagged_transactions: Iterable[TaggedTransaction],
-    pm_entries: Iterable[PMEntry],
-    date_window_days: int = 3,
+    per_property_totals: Dict[str, Dict[str, Decimal]],
+    year: int,
+    property_sheet_names: Sequence[str] = (
+        "1015 39th St",
+        "1210 College Ave",
+        "308 Lincoln Ave",
+    ),
 ) -> Path:
-    copy_template(template_path, output_path)
+    """Copy the template and fill per-property category totals using dynamic row scan."""
+    copy_and_clear_values(template_path, output_path)
 
-    pm_list: List[PMEntry] = list(pm_entries)
-    ltr_bank = [tt for tt in tagged_transactions if tt.category == "LTR"]
+    wb = openpyxl.load_workbook(output_path)
+    for sheet_name in property_sheet_names:
+        if sheet_name not in wb.sheetnames:
+            continue
+        ws = wb[sheet_name]
+        ws["B1"] = sheet_name
+        ws["D4"] = year
 
-    # Identify double-counts (bank txns that mirror PM lines) and drop them.
-    collisions = detect_double_counts(
-        [tt.transaction for tt in ltr_bank],
-        pm_list,
-        date_window_days=date_window_days,
-    )
-    collision_ids = {id(c.bank_transaction) for c in collisions}
-    ltr_bank = [tt for tt in ltr_bank if id(tt.transaction) not in collision_ids]
+        label_rows = scan_label_rows(ws)
+        totals = per_property_totals.get(sheet_name, {})
+        for category, value in totals.items():
+            if value is None or value == Decimal("0"):
+                continue
+            row = _find_row_case_insensitive(label_rows, category)
+            if row is None:
+                warnings.warn(
+                    f"LTR writer: category '{category}' not found on sheet '{sheet_name}'"
+                )
+                continue
+            ws[f"D{row}"] = float(value)
 
-    rows: List[list] = []
-
-    for entry in pm_list:
-        rows.append([entry.date, entry.description, float(entry.amount), entry.pm_category])
-
-    for tt in ltr_bank:
-        txn = tt.transaction
-        rows.append([txn.date, txn.description, float(txn.amount), tt.category])
-
-    append_rows(output_path, rows)
+    wb.save(output_path)
     return output_path
