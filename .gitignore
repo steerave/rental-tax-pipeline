@@ -33,3 +33,9 @@ dist/
 *.swp
 .DS_Store
 Thumbs.db
+
+# Exception: allow anonymized test fixtures
+!tests/fixtures/**
+# But never allow raw discovery dumps
+tests/fixtures/**/_txt_*/
+tests/fixtures/**/_raw_*
