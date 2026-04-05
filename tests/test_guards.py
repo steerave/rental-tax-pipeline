@@ -1,4 +1,4 @@
-"""Tests for reconciliation, duplicate, and double-count guards."""
+"""Tests for reconciliation and duplicate guards."""
 
 from __future__ import annotations
 
@@ -7,11 +7,9 @@ from decimal import Decimal
 
 import pytest
 
-from taxauto.guards.double_count import DoubleCountError, detect_double_counts
 from taxauto.guards.duplicates import DuplicateError, detect_duplicates
 from taxauto.guards.reconcile import ReconcileError, reconcile_statement
 from taxauto.parsers.bank import ParsedStatement, Transaction
-from taxauto.parsers.pm_ltr import PMEntry
 
 
 def _txn(day: int, description: str, amount: str) -> Transaction:
@@ -86,51 +84,3 @@ def test_detect_duplicates_raise_mode() -> None:
         detect_duplicates(txns, raise_on_found=True)
 
 
-# --- double-count (LTR) ---------------------------------------------------
-
-
-def test_detect_double_counts_flags_matching_txn_and_pm_line() -> None:
-    bank_txns = [
-        _txn(5, "ACME PROPERTY MGMT OWNER DRAW", "1250.00"),
-    ]
-    pm_entries = [
-        PMEntry(
-            date=date(2025, 1, 5),
-            description="Owner Distribution",
-            pm_category="Owner Draw",
-            amount=Decimal("1250.00"),
-            property_id="123 Main St",
-        ),
-    ]
-    collisions = detect_double_counts(bank_txns, pm_entries, date_window_days=3)
-    assert len(collisions) == 1
-    assert collisions[0].bank_transaction.amount == Decimal("1250.00")
-
-
-def test_detect_double_counts_no_collision_when_amounts_differ() -> None:
-    bank_txns = [_txn(5, "ACME PM", "1250.00")]
-    pm_entries = [
-        PMEntry(
-            date=date(2025, 1, 5),
-            description="Rent",
-            pm_category="Rental Income",
-            amount=Decimal("2500.00"),
-            property_id="X",
-        )
-    ]
-    assert detect_double_counts(bank_txns, pm_entries) == []
-
-
-def test_detect_double_counts_raise_mode() -> None:
-    bank_txns = [_txn(5, "ACME PM", "1250.00")]
-    pm_entries = [
-        PMEntry(
-            date=date(2025, 1, 5),
-            description="Owner Draw",
-            pm_category="Owner Draw",
-            amount=Decimal("1250.00"),
-            property_id="X",
-        )
-    ]
-    with pytest.raises(DoubleCountError):
-        detect_double_counts(bank_txns, pm_entries, raise_on_found=True)
