@@ -23,7 +23,8 @@ This project automates everything except the irreducible judgment calls.
 - **Google Sheets review roundtrip** — pushes unknowns to a Sheet with dropdown validation, pulls tagged decisions back.
 - **Cross-year learning** — every human decision is written back to `vendor_mapping.yaml` with provenance. Ambiguous vendors (same vendor seen in multiple categories) are flagged forever and never auto-tagged.
 - **Prior-year bootstrap** — mines completed filed spreadsheets to pre-populate the vendor map before the first real run.
-- **Excel writers** — fill the accountant's existing blank templates (`openpyxl`), merging PM-report entries with bank transactions for LTR.
+- **Excel writers** — fill the accountant's existing P&L templates (`openpyxl`). STR writer uses hardcoded row positions; LTR writer dynamically scans column C per sheet to handle drifting layouts. All formula cells (totals, net income) are preserved.
+- **Transactions audit tab** — appends a `{property}_txns` sheet to each output workbook showing every transaction that contributed to the P&L values.
 - **Guards** — reconciliation, duplicate detection, and LTR double-count prevention (bank txn vs. PM line item). All guards fail loudly.
 - **Idempotent CLI** — every step is safe to re-run.
 

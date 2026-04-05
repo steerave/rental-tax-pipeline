@@ -18,5 +18,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Google Sheets review push/pull roundtrip using `gspread`.
 - Reconciliation, duplicate, and LTR double-count guards.
 - STR and LTR Excel writers that fill the accountant's blank templates.
+- STR writer v2: fills real accountant P&L template with hardcoded row positions, forces `C33="other"`, preserves formula cells.
+- LTR writer v2: fills real accountant P&L template with per-sheet dynamic row scanning (handles drifting row positions and case-insensitive label matching).
+- Per-property transactions audit tab appended to output workbooks for traceability.
 - Command-line interface (`taxauto`) with `extract`, `categorize`, `review`, `build`, and `bootstrap` subcommands.
 - Full pytest suite covering all modules plus an end-to-end synthetic-fixture integration test.
