@@ -19,10 +19,10 @@ Chase Business Complete Checking
 CHECKING SUMMARY
 INSTANCES AMOUNT
 Beginning Balance $37,969.40
-Deposits and Additions 20 18,085.21
+Deposits and Additions 6 14,408.01
 Checks Paid 5 -1,016.38
-Electronic Withdrawals 38 -19,117.62
-Ending Balance 63 $35,920.61
+Electronic Withdrawals 8 -5,937.64
+Ending Balance 19 $45,423.39
 *end*summary
 Page of
 1 6

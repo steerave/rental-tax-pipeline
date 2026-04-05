@@ -39,7 +39,10 @@ def test_parses_checking_summary_totals(statement: ChaseCheckingStatement) -> No
 
 
 def test_parses_deposits_section(statement: ChaseCheckingStatement) -> None:
-    assert len(statement.deposits) >= 3
+    # Exact count locks in the fold-continuations behavior: any bug that
+    # explodes each continuation line into its own transaction would break
+    # this immediately.
+    assert len(statement.deposits) == 6
     vrbo = [t for t in statement.deposits if "Vrbo" in t.description]
     assert len(vrbo) >= 1
     first_vrbo = vrbo[0]
@@ -57,14 +60,14 @@ def test_parses_airbnb_deposit(statement: ChaseCheckingStatement) -> None:
 
 
 def test_parses_checks_paid_section(statement: ChaseCheckingStatement) -> None:
-    assert len(statement.checks_paid) >= 1
+    assert len(statement.checks_paid) == 5
     for t in statement.checks_paid:
         assert t.amount < Decimal("0")   # checks paid are withdrawals
         assert t.check_number is not None
 
 
 def test_parses_electronic_withdrawals(statement: ChaseCheckingStatement) -> None:
-    assert len(statement.electronic_withdrawals) >= 3
+    assert len(statement.electronic_withdrawals) == 8
     # Single-line Online Payment
     online = [t for t in statement.electronic_withdrawals if "Online Payment" in t.description]
     assert len(online) >= 1
@@ -92,3 +95,29 @@ def test_does_not_double_count_section_total_rows(statement: ChaseCheckingStatem
     transaction row."""
     for t in statement.deposits:
         assert "Total Deposits" not in t.description
+
+
+def test_parsed_counts_match_summary_instance_counts(statement: ChaseCheckingStatement) -> None:
+    """The strongest invariant: parsed transaction counts must equal the
+    summary block's instance counts. These numbers come from independent
+    regex paths (summary parser vs transaction parser), so if either drifts,
+    the other catches it. This is exactly how we detected parser bugs in
+    real-data verification."""
+    assert len(statement.deposits) == statement.instance_counts["deposits"]
+    assert len(statement.checks_paid) == statement.instance_counts["checks_paid"]
+    assert len(statement.electronic_withdrawals) == statement.instance_counts["electronic_withdrawals"]
+
+
+def test_electronic_withdrawals_are_negative(statement: ChaseCheckingStatement) -> None:
+    """Sign convention: withdrawals are stored as negative amounts."""
+    assert len(statement.electronic_withdrawals) > 0
+    for t in statement.electronic_withdrawals:
+        assert t.amount < 0
+
+
+def test_rent_qc_deposits_identifiable_by_description(statement: ChaseCheckingStatement) -> None:
+    """Task 9's double-count guard depends on finding 'Rent Qc' in deposit
+    descriptions. This test locks in the description-preservation contract
+    so future parser refactors can't silently break the guard."""
+    rent_qc = [t for t in statement.deposits if "Rent Qc" in t.description]
+    assert len(rent_qc) >= 1, "Expected at least one Rent Qc deposit in the fixture"

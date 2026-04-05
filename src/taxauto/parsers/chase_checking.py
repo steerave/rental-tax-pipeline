@@ -17,6 +17,7 @@ Design:
 from __future__ import annotations
 
 import re
+import warnings
 from dataclasses import dataclass, field
 from datetime import date
 from decimal import Decimal
@@ -252,7 +253,17 @@ def _parse_deposits_or_ew(
         if re.match(r"^\d{2}/\d{2}\s", line):
             m = _TXN_RE.match(line)
             if not m:
-                # Start-of-transaction line that did not parse; skip.
+                # Start-of-transaction line that did not fully parse.
+                # Flush any in-progress transaction, then drop the current
+                # pointer so subsequent continuation lines are NOT wrongly
+                # appended to the previous transaction's description.
+                warnings.warn(
+                    f"Chase parser: line looks like a transaction start but "
+                    f"failed regex match: {line!r}",
+                    stacklevel=2,
+                )
+                _flush()
+                current = None
                 continue
             # Flush previous
             _flush()
@@ -300,7 +311,7 @@ def _parse_checks_paid(
 
 # --- Public entry point -------------------------------------------------
 
-def parse_chase_checking(text: str, account_label: str) -> ChaseCheckingStatement:
+def parse_chase_checking(text: str, *, account_label: str) -> ChaseCheckingStatement:
     """Parse a Chase Business Complete Checking statement text blob."""
     # Capture period from raw text BEFORE the cleaner strips the header.
     period_start, period_end = _parse_period(text)
@@ -334,6 +345,21 @@ def parse_chase_checking(text: str, account_label: str) -> ChaseCheckingStatemen
         if "Electronic Withdrawals" in summary:
             stmt.total_electronic_withdrawals = summary["Electronic Withdrawals"]["amount"]  # type: ignore[index]
             stmt.instance_counts["electronic_withdrawals"] = summary["Electronic Withdrawals"]["count"]  # type: ignore[index]
+
+    # Guard: if NONE of the 5 summary fields were populated, the CHECKING
+    # SUMMARY block is missing entirely (format change or truncated text).
+    # Downstream reconcile guards (Task 8) depend on these fields, so fail
+    # loudly here rather than silently handing back an empty statement.
+    if (stmt.beginning_balance is None
+            and stmt.total_deposits is None
+            and stmt.total_checks_paid is None
+            and stmt.total_electronic_withdrawals is None
+            and stmt.ending_balance is None):
+        raise ValueError(
+            f"Chase checking statement for account {account_label} has no "
+            f"parseable CHECKING SUMMARY block — format may have changed or "
+            f"text is truncated."
+        )
 
     # Deposits (positive amounts)
     if "DEPOSITS AND ADDITIONS" in sections:
