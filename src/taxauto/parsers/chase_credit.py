@@ -140,10 +140,16 @@ def _de_double(text: str) -> str:
             # if the line is pure doubled — this avoids mangling a
             # legitimate uppercase string that happens to contain one
             # doubled letter (e.g., "INTEREST" -> "INTREST").
+            #
+            # We evaluate the alphabetic CORE of each token (ignoring
+            # punctuation like parentheses) so tokens such as
+            # ``(CCOONNTTIINNUUEEDD)`` are correctly collapsed.
             words = stripped.split()
-            if all(_is_pure_doubled(w) for w in words if w.isalpha()):
+            if all(
+                _is_pure_doubled(w) for w in words if _alpha_core(w)
+            ):
                 collapsed_words = [
-                    _collapse_doubled(w) if w.isalpha() else w
+                    _collapse_doubled(w) if _alpha_core(w) else w
                     for w in words
                 ]
                 leading = line[: len(line) - len(line.lstrip())]
@@ -153,18 +159,54 @@ def _de_double(text: str) -> str:
     return "\n".join(out_lines)
 
 
-def _is_pure_doubled(word: str) -> bool:
-    """True iff every letter in `word` is part of a run of length 2
-    (i.e. word has even length and consists entirely of consecutive
-    doubled letters like ``AACCCCOOUUNNTT``)."""
-    if len(word) < 2 or len(word) % 2 != 0:
+def _alpha_core(token: str) -> str:
+    """Return only the alphabetic characters of a token, dropping punctuation.
+
+    Used so that tokens like ``(CCOONNTTIINNUUEEDD)`` can be evaluated for
+    pure-doubled-ness without their surrounding parentheses tripping the
+    even-length / isalpha checks.
+    """
+    return "".join(c for c in token if c.isalpha())
+
+
+def _is_pure_doubled(token: str) -> bool:
+    """True iff the alphabetic CORE of ``token`` is a pure doubled pattern.
+
+    A 'pure doubled' alphabetic string has even length and every letter
+    appears in a consecutive same-letter pair, e.g. ``AACCCCOOUUNNTT``
+    (ACCOUNT doubled) or the alphabetic core of ``(CCOONNTTIINNUUEEDD)``
+    which is ``CCOONNTTIINNUUEEDD`` (CONTINUED doubled). This correctly
+    returns False for words like ``INTEREST`` that merely contain a single
+    natural double letter.
+    """
+    core = _alpha_core(token)
+    if len(core) < 2 or len(core) % 2 != 0:
         return False
-    return all(word[i] == word[i + 1] for i in range(0, len(word), 2))
+    return all(core[i] == core[i + 1] for i in range(0, len(core), 2))
 
 
-def _collapse_doubled(word: str) -> str:
-    """Collapse a pure-doubled word: ``AACCCCOOUUNNTT`` -> ``ACCOUNT``."""
-    return "".join(word[i] for i in range(0, len(word), 2))
+def _collapse_doubled(token: str) -> str:
+    """Collapse consecutive same-letter pairs in a token, preserving punctuation.
+
+    ``AACCCCOOUUNNTT`` -> ``ACCOUNT``
+    ``(CCOONNTTIINNUUEEDD)`` -> ``(CONTINUED)``
+    Non-alphabetic characters are passed through untouched.
+    """
+    result: List[str] = []
+    i = 0
+    n = len(token)
+    while i < n:
+        if (
+            i + 1 < n
+            and token[i].isalpha()
+            and token[i] == token[i + 1]
+        ):
+            result.append(token[i])
+            i += 2
+        else:
+            result.append(token[i])
+            i += 1
+    return "".join(result)
 
 
 def _to_decimal(raw: str) -> Decimal:

@@ -1,8 +1,10 @@
 """Tests for the Chase Ink Business credit card (account 1091) parser.
 
 Statements contain TWO cardholders: 1091 (primary) and 1109 (co-user).
-The parser must attribute every transaction to the correct cardholder
-via a state machine that toggles on the cardholder name lines.
+The parser uses a state machine driven by the per-card TRANSACTIONS THIS
+CYCLE subtotal lines (not cardholder name headers, which appear after
+each block in pdfplumber extraction order). The state machine flips to
+1109 when the 1091 subtotal is seen and blanks after the 1109 subtotal.
 """
 
 from __future__ import annotations
@@ -101,3 +103,32 @@ def test_per_card_sum_matches_cycle_subtotal(statement: ChaseCreditStatement) ->
     assert statement.card_1109_cycle_total is not None
     assert card_1091_sum == statement.card_1091_cycle_total
     assert card_1109_sum == statement.card_1109_cycle_total
+
+
+def test_year_boundary_dec_jan_split() -> None:
+    """Statements spanning Dec 2024 → Jan 2025 must assign December
+    transactions to 2024 and January transactions to 2025. Verified on
+    the real 20250106 statement with 32 Dec and 1 Jan transactions during
+    development; this test locks in the behavior with a synthetic fixture."""
+    mini_statement = """\
+AACCCCOOUUNNTT SSUUMMMMAARRYY
+Previous Balance $100.00
+Purchases +$30.00
+New Balance $130.00
+Opening/Closing Date 12/07/24 - 01/06/25
+
+12/15 FOO MERCHANT 10.00
+01/02 BAR MERCHANT 20.00
+TRANSACTIONS THIS CYCLE (CARD 1091) $30.00
+"""
+    statement = parse_chase_credit(mini_statement, account_label="CC-1091")
+
+    assert statement.period_start == date(2024, 12, 7)
+    assert statement.period_end == date(2025, 1, 6)
+    assert len(statement.transactions) == 2
+    # December transaction -> 2024 (period start year)
+    dec_txn = next(t for t in statement.transactions if t.date.month == 12)
+    assert dec_txn.date == date(2024, 12, 15)
+    # January transaction -> 2025 (period end year)
+    jan_txn = next(t for t in statement.transactions if t.date.month == 1)
+    assert jan_txn.date == date(2025, 1, 2)
