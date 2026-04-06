@@ -64,7 +64,7 @@ rentqc_to_ltr_template:
   "Pest Control": "Pest Control"
   "Plumbing": "Plumbing"
   "Carpet Cleaning": "Cleaning Fees"
-  "HVAC (Heat, Ventilation, Air)": "Repairs and Maintenance"
+  "HVAC (Heat, Ventilation, Air)": "Appliances"
   "Rental License": "Licenses and Fees"
   "Lease Fee": "Licenses and Fees"
   "Legal Expenses": "legal expenses"
@@ -81,3 +81,7 @@ rentqc_to_ltr_template:
 
   # Internal — exclude
   "Owner Distributions / S corp Distributions": null
+
+# Maps Rent QC property names to template sheet names when they don't match exactly.
+property_aliases:
+  "308 S Lincoln Ave": "308 Lincoln Ave"

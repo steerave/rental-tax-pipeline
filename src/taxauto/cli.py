@@ -311,12 +311,23 @@ def cmd_build(cfg: Config, year: int) -> int:
     # Rent QC category mapping
     rentqc_mapping = get_rentqc_mapping(cfg)
 
-    # Flatten all Rent QC transactions
+    # Load property aliases from config
+    property_aliases = cfg.raw.get("property_aliases", {}) or {}
+
+    # Flatten all Rent QC transactions, filtering by report period and
+    # normalizing property names via aliases.
+    # Include reports whose period_start.year == tax year, then from those
+    # reports only include transactions whose date.year == tax year.
     all_rentqc_txns = []
     for report in rentqc_reports:
+        if report.period_start and report.period_start.year != year:
+            continue
         for prop in report.properties:
+            normalized_name = property_aliases.get(prop.name, prop.name)
             for txn in prop.transactions:
-                all_rentqc_txns.append((prop.name, txn))
+                if txn.date.year != year:
+                    continue
+                all_rentqc_txns.append((normalized_name, txn))
 
     # eCheck double-count guard: find bank deposits that match owner disbursements
     all_rentqc_flat = [txn for _, txn in all_rentqc_txns]
@@ -336,8 +347,6 @@ def cmd_build(cfg: Config, year: int) -> int:
 
     # a) Rent QC transactions -> template categories
     for prop_name, txn in all_rentqc_txns:
-        if txn.date.year != year:
-            continue
         if not txn.category:
             continue
         template_cat = map_rentqc_category(txn.category, rentqc_mapping)
@@ -433,8 +442,6 @@ def cmd_build(cfg: Config, year: int) -> int:
     # Build per-property transaction detail dicts for audit trail
     ltr_detail = {}  # property -> [txn dicts]
     for prop_name, txn in all_rentqc_txns:
-        if txn.date.year != year:
-            continue
         if not txn.category:
             continue
         template_cat = map_rentqc_category(txn.category, rentqc_mapping)
