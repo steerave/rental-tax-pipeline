@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `str_sheets` config section mapping property names to Google Sheet IDs.
 - CLI `build` command now reads STR revenue from live Google Sheets when configured, with XLSX fallback.
 - Live integration test for Oak Glen Google Sheet reader.
+- `review push` reuses a pre-created Google Sheet when `REVIEW_SHEET_ID` env var or cached `review_sheet_id.txt` is present (required for service accounts on free GCP projects with zero Drive storage).
 
 ## [0.2.0] - 2026-04-05
 

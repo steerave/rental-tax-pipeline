@@ -53,6 +53,9 @@ taxauto review pull --year 2025
 
 # Run guards and fill accountant templates
 taxauto build --year 2025
+
+# Compare generated workbooks against filed originals
+taxauto verify --year 2025
 ```
 
 ## Tech stack

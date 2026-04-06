@@ -1,5 +1,28 @@
 # Daily Status Log
 
+## 2026-04-06
+
+### Done
+- **Phase 3 smart review workflow complete.**
+- Review Sheet populated with ~878 vendor rows + 1,410 transaction rows.
+- Sheet shared with steerave@gmail.com and mclaudy@gmail.com as editors.
+- Dropdown validation: Category, Property (7 properties), Expense Type (24 categories).
+- `verify` subcommand prints cell-by-cell comparison against filed 2024 XLSX.
+- 130 tests passing, 0 failures.
+
+### In Progress
+- User review: tag ~878 vendor rows in the Google Sheet.
+
+### Next
+- After tagging: `taxauto review pull --year 2024` → `taxauto build --year 2024` → `taxauto verify --year 2024`
+- Fill `interest_expense.yaml` with Form 1098 values.
+- Run 2025 pipeline.
+
+### Notes
+- Review Sheet ID: `1l3pXIxVcb4NVjQO-oemSbnkkjU8JuJZF9Nz3BpDUgNM`
+- Transaction-level overrides in the Transactions tab take precedence over vendor-level decisions.
+- Service accounts on consumer Gmail can't create Drive files; the user pre-created the Sheet.
+
 ## 2026-04-05
 
 ### Done

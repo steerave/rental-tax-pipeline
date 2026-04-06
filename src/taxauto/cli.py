@@ -211,7 +211,21 @@ def cmd_review_push(cfg: Config, year: int, client_factory=None) -> int:
     editor_emails = review_cfg.get("editor_emails", [])
     sheet_name = review_cfg.get("sheet_name_template", "rental-tax-review-{year}").format(year=year)
 
-    spreadsheet = create_and_share_sheet(client, title=sheet_name, editor_emails=editor_emails)
+    # Reuse an existing sheet if a cached ID or env var exists (service accounts
+    # on free GCP projects have zero Drive storage and cannot create files).
+    existing_id = None
+    sheet_id_path = _cache_path(paths, "review_sheet_id.txt")
+    if sheet_id_path.exists():
+        existing_id = sheet_id_path.read_text(encoding="utf-8").strip()
+    if not existing_id and cfg.review_sheet_id:
+        existing_id = cfg.review_sheet_id
+
+    spreadsheet = create_and_share_sheet(
+        client,
+        title=sheet_name,
+        editor_emails=editor_emails,
+        existing_sheet_id=existing_id,
+    )
     print(f"[review push] Created Sheet: {spreadsheet.url}")
 
     all_properties = cfg.raw.get("all_properties", []) or []
