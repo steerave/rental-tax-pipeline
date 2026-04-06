@@ -151,5 +151,6 @@ REVIEW_SHEET_ID=
 1. `review push --year 2024` creates a Sheet, the user can open it, and sees ~200 vendor rows + 1,410 transaction rows with dropdowns.
 2. After tagging ~200 vendor rows, `review pull --year 2024` reads all decisions and produces a complete `review_decisions.json`.
 3. `build --year 2024` produces STR and LTR workbooks with expense rows populated from the review decisions.
-4. `vendor_mapping.yaml` grows by ~200 entries (one per tagged vendor) with category, property, and expense_type.
-5. Full test suite remains green (119+ tests).
+4. `build` automatically compares the generated workbooks against the filed 2024 outputs (`years/2024/outputs/`) and prints a per-cell delta report (same format as Phase 2 verification: Sheet | Row | Label | Filed | Generated | Delta | Within tolerance?). This is the accuracy check — every expense row should be close to what the accountant filed.
+5. `vendor_mapping.yaml` grows by ~200 entries (one per tagged vendor) with category, property, and expense_type.
+6. Full test suite remains green (119+ tests).
