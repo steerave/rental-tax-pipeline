@@ -1,14 +1,545 @@
-# Global vendor → category mapping. Committed to git and grows every year
-# through bootstrap and human review decisions.
-#
-# Structure:
-#   vendors:
-#     <normalized_vendor_key>:
-#       category: STR | LTR | Personal
-#       confidence: 0.0–1.0
-#       occurrences: int
-#       learned_from: [year, ...]
-#       ambiguous: bool   # if true, always route to review
-#
-# Empty until bootstrap runs against a prior year.
-vendors: {}
+vendors:
+  all drain:
+    ambiguous: false
+    category: Plumbing
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 3
+    source: rentqc_bootstrap
+  amanda:
+    ambiguous: true
+    category: Rent Income
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 21
+    source: rentqc_bootstrap
+  amanda reiff:
+    ambiguous: true
+    category: Rent Income
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 5
+    source: rentqc_bootstrap
+  andrea n dinkins- andrews:
+    ambiguous: true
+    category: Rent Income
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 14
+    source: rentqc_bootstrap
+  appliance rescue:
+    ambiguous: true
+    category: Repair (IA)
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 8
+    source: rentqc_bootstrap
+  bettendorf heating and air condtioning:
+    ambiguous: false
+    category: HVAC (Heat, Ventilation, Air)
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 1
+    source: rentqc_bootstrap
+  bettendorf heating condtioning:
+    ambiguous: false
+    category: HVAC (Heat, Ventilation, Air)
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 1
+    source: rentqc_bootstrap
+  billy j haliburton:
+    ambiguous: false
+    category: Rent Income
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 16
+    source: rentqc_bootstrap
+  bitler heating & a/c:
+    ambiguous: false
+    category: HVAC (Heat, Ventilation, Air)
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 1
+    source: rentqc_bootstrap
+  bobby g erwin:
+    ambiguous: true
+    category: Prepaid Rent
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 10
+    source: rentqc_bootstrap
+  budget drain:
+    ambiguous: false
+    category: Plumbing
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 4
+    source: rentqc_bootstrap
+  byron drew:
+    ambiguous: true
+    category: Rent Income
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 13
+    source: rentqc_bootstrap
+  carpet certified cleaners:
+    ambiguous: false
+    category: Carpet Cleaning
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 6
+    source: rentqc_bootstrap
+  carpet cleaners certified cleaners:
+    ambiguous: false
+    category: Carpet Cleaning
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 1
+    source: rentqc_bootstrap
+  carpet maintenance certified cleaners:
+    ambiguous: false
+    category: Carpet Cleaning
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 1
+    source: rentqc_bootstrap
+  certified carpet:
+    ambiguous: false
+    category: Carpet Cleaning
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 1
+    source: rentqc_bootstrap
+  certified carpet cleaners:
+    ambiguous: false
+    category: Carpet Cleaning
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 1
+    source: rentqc_bootstrap
+  chad holtz:
+    ambiguous: true
+    category: Rent Income
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 18
+    source: rentqc_bootstrap
+  chad holtz fitts:
+    ambiguous: false
+    category: Prepaid Rent
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 1
+    source: rentqc_bootstrap
+  chimney falcon's nest sweeps:
+    ambiguous: false
+    category: Repair (IA)
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 1
+    source: rentqc_bootstrap
+  city of bettendorf:
+    ambiguous: true
+    category: Rental License
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 6
+    source: rentqc_bootstrap
+  city of davenport:
+    ambiguous: false
+    category: Rental License
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 3
+    source: rentqc_bootstrap
+  dalantae:
+    ambiguous: false
+    category: Rent Income
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 1
+    source: rentqc_bootstrap
+  dalantae fitts:
+    ambiguous: true
+    category: Rent Income
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 5
+    source: rentqc_bootstrap
+  dalantae l:
+    ambiguous: true
+    category: Rent Income
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 5
+    source: rentqc_bootstrap
+  dinkins- andrea n andrews:
+    ambiguous: true
+    category: Rent Income
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 5
+    source: rentqc_bootstrap
+  dustin m francis:
+    ambiguous: true
+    category: Rent Income
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 39
+    source: rentqc_bootstrap
+  east moline glass:
+    ambiguous: false
+    category: Repair (IA)
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 1
+    source: rentqc_bootstrap
+  element plumbing:
+    ambiguous: false
+    category: Plumbing
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 2
+    source: rentqc_bootstrap
+  gamgee:
+    ambiguous: false
+    category: Owner Distributions / S corp Distributions
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 1
+    source: rentqc_bootstrap
+  gamgee properties:
+    ambiguous: false
+    category: Owner Distributions / S corp Distributions
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 25
+    source: rentqc_bootstrap
+  gamgee properties llc:
+    ambiguous: false
+    category: Owner Distributions / S corp Distributions
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 5
+    source: rentqc_bootstrap
+  iowa american water:
+    ambiguous: false
+    category: Water
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 13
+    source: rentqc_bootstrap
+  james williams:
+    ambiguous: true
+    category: Prepaid Rent
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 13
+    source: rentqc_bootstrap
+  john h brasche:
+    ambiguous: false
+    category: Prepaid Rent
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 10
+    source: rentqc_bootstrap
+  jordan s lucas:
+    ambiguous: false
+    category: Security Deposits Clearing
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 1
+    source: rentqc_bootstrap
+  jrb home services:
+    ambiguous: false
+    category: Repair (IA)
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 2
+    source: rentqc_bootstrap
+  karley lee:
+    ambiguous: true
+    category: Rent Income
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 13
+    source: rentqc_bootstrap
+  laundry:
+    ambiguous: false
+    category: Laundry Income
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 1
+    source: rentqc_bootstrap
+  lucas terronez:
+    ambiguous: true
+    category: Rent Income
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 10
+    source: rentqc_bootstrap
+  maintenance rqc maintenance:
+    ambiguous: true
+    category: Stock Materials
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 2
+    source: rentqc_bootstrap
+  managment midwest pest lawn service:
+    ambiguous: false
+    category: Pest Control
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 3
+    source: rentqc_bootstrap
+  mason & scott pc:
+    ambiguous: false
+    category: Legal Expenses
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 1
+    source: rentqc_bootstrap
+  meyer pest control:
+    ambiguous: false
+    category: Pest Control
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 1
+    source: rentqc_bootstrap
+  midamerican:
+    ambiguous: false
+    category: Electricity & Gas
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 2
+    source: rentqc_bootstrap
+  midamerican energy:
+    ambiguous: false
+    category: Electricity & Gas
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 29
+    source: rentqc_bootstrap
+  midwest door doctor llc:
+    ambiguous: false
+    category: Repair (IA)
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 1
+    source: rentqc_bootstrap
+  midwest pest managment & lawn service:
+    ambiguous: false
+    category: Pest Control
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 2
+    source: rentqc_bootstrap
+  nikole shirilla:
+    ambiguous: false
+    category: Rent Income
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 13
+    source: rentqc_bootstrap
+  paul a hassig:
+    ambiguous: true
+    category: Rent Income
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 6
+    source: rentqc_bootstrap
+  qc mow and inc:
+    ambiguous: false
+    category: Lawn and Snow Care
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 3
+    source: rentqc_bootstrap
+  qc mow and snow:
+    ambiguous: false
+    category: Lawn and Snow Care
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 3
+    source: rentqc_bootstrap
+  qc mow and snow inc:
+    ambiguous: false
+    category: Lawn and Snow Care
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 9
+    source: rentqc_bootstrap
+  qc mow snow inc:
+    ambiguous: false
+    category: Lawn and Snow Care
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 11
+    source: rentqc_bootstrap
+  recycling lakeshore systems:
+    ambiguous: false
+    category: Garbage and Recycling
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 14
+    source: rentqc_bootstrap
+  renee y gregerson:
+    ambiguous: true
+    category: Rent Income
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 28
+    source: rentqc_bootstrap
+  rent qc:
+    ambiguous: true
+    category: Security Deposits Clearing
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 74
+    source: rentqc_bootstrap
+  rent qc llc:
+    ambiguous: true
+    category: Management Fees
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 32
+    source: rentqc_bootstrap
+  robert l poore:
+    ambiguous: true
+    category: Rent Income
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 11
+    source: rentqc_bootstrap
+  rqc:
+    ambiguous: true
+    category: Stock Materials
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 6
+    source: rentqc_bootstrap
+  rqc maintenance:
+    ambiguous: true
+    category: Stock Materials
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 155
+    source: rentqc_bootstrap
+  shawn p:
+    ambiguous: false
+    category: Prepaid Rent
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 1
+    source: rentqc_bootstrap
+  shawn p yuille:
+    ambiguous: false
+    category: Rent Income
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 2
+    source: rentqc_bootstrap
+  sylvia m mcclure:
+    ambiguous: true
+    category: Rent Income
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 31
+    source: rentqc_bootstrap
+  taylor g hollins:
+    ambiguous: true
+    category: Prepaid Rent
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 17
+    source: rentqc_bootstrap
+  tenika d mitchell:
+    ambiguous: true
+    category: Prepaid Rent
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 23
+    source: rentqc_bootstrap
+  the salvation army gpd-tip:
+    ambiguous: true
+    category: Prepaid Rent
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 11
+    source: rentqc_bootstrap
+  tri-state control inc:
+    ambiguous: false
+    category: Repair (IA)
+    confidence: 0.95
+    learned_from:
+    - 2024
+    occurrences: 1
+    source: rentqc_bootstrap
