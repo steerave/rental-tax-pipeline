@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- Standalone review Sheet formatting script (`python -m taxauto.sheets.format_review`) that applies dropdown validation (Category/Property/Expense Type), frozen bold headers, column widths, currency formatting, editable-column yellow highlighting, alternating row colors on Vendors tab, and auto-filters on both tabs.
+- `push.py` dropdown validation now uses reliable raw Sheets API `batch_update` instead of broken `add_validation` method.
 - Live Google Sheets STR earnings reader via `gspread` with fuzzy tab-name matching, flexible date parsing, and data-quality handling (cancelled bookings, dollar signs, missing-year dates).
 - `str_sheets` config section mapping property names to Google Sheet IDs.
 - CLI `build` command now reads STR revenue from live Google Sheets when configured, with XLSX fallback.

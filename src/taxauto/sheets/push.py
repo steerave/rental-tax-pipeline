@@ -64,15 +64,14 @@ def _row_id(year: int, index: int) -> str:
     return f"{year}-{index + 1:04d}"
 
 
-def _try_set_dropdown(worksheet: Any, col_letter: str, num_rows: int, values: Sequence[str]) -> None:
-    """Best-effort dropdown validation."""
+def _set_dropdown(spreadsheet: Any, worksheet: Any, col_index: int, num_rows: int, values: Sequence[str]) -> None:
+    """Set dropdown validation using the raw Sheets API batch_update."""
+    from taxauto.sheets.format_review import set_dropdown_validation
+
     try:
-        add_validation = getattr(worksheet, "add_validation", None)
-        if callable(add_validation):
-            range_str = f"{col_letter}2:{col_letter}{num_rows + 1}"
-            add_validation(range_str, "ONE_OF_LIST", list(values))
+        set_dropdown_validation(spreadsheet, worksheet, col_index, num_rows, values)
     except Exception:
-        pass
+        pass  # best-effort — formatting script can always re-apply
 
 
 def push_review_queue(
@@ -125,9 +124,9 @@ def push_review_queue(
             vendor_ws.append_row(row)
 
     num_vendors = len(groups)
-    _try_set_dropdown(vendor_ws, "G", num_vendors, categories)
-    _try_set_dropdown(vendor_ws, "H", num_vendors, properties)
-    _try_set_dropdown(vendor_ws, "I", num_vendors, expense_types)
+    _set_dropdown(spreadsheet, vendor_ws, 6, num_vendors, categories)
+    _set_dropdown(spreadsheet, vendor_ws, 7, num_vendors, properties)
+    _set_dropdown(spreadsheet, vendor_ws, 8, num_vendors, expense_types)
 
     # --- Transactions tab ---
     try:
@@ -163,9 +162,9 @@ def push_review_queue(
         for row in txn_rows:
             txn_ws.append_row(row)
 
-    _try_set_dropdown(txn_ws, "G", len(items), categories)
-    _try_set_dropdown(txn_ws, "H", len(items), properties)
-    _try_set_dropdown(txn_ws, "I", len(items), expense_types)
+    _set_dropdown(spreadsheet, txn_ws, 6, len(items), categories)
+    _set_dropdown(spreadsheet, txn_ws, 7, len(items), properties)
+    _set_dropdown(spreadsheet, txn_ws, 8, len(items), expense_types)
 
     # Delete default "Sheet1" if it exists
     try:

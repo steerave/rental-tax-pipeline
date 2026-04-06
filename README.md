@@ -21,7 +21,7 @@ This project automates everything except the irreducible judgment calls.
 - **Chase Ink credit card parser** — dual-cardholder state machine (cards 1091 + 1109) extracting transactions from interleaved per-card sections across 13 monthly statements.
 - **Rent QC property-manager parser** — x-coordinate column binning to reliably extract 28 expense/income categories across 3 properties per report, with 6-invariant reconciliation per property per report.
 - **Vendor categorizer** — applies `vendor_mapping.yaml`; known vendors auto-tag, unknown or ambiguous vendors go to review.
-- **Google Sheets review roundtrip** — pushes unknowns to a Sheet with dropdown validation, pulls tagged decisions back.
+- **Google Sheets review roundtrip** — pushes unknowns to a Sheet with dropdown validation, pulls tagged decisions back. Standalone formatting script applies dropdown validation (Category, Property, Expense Type), frozen/bold headers, column widths, currency formatting, editable-column highlighting, alternating row colors, and auto-filters.
 - **Cross-year learning** — every human decision is written back to `vendor_mapping.yaml` with provenance. Ambiguous vendors (same vendor seen in multiple categories) are flagged forever and never auto-tagged.
 - **Prior-year bootstrap** — mines completed filed spreadsheets and Rent QC reports to pre-populate the vendor map (68 vendors learned from 2024 Rent QC data).
 - **Excel writers** — fill the accountant's existing P&L templates (`openpyxl`). STR writer uses hardcoded row positions; LTR writer dynamically scans column C per sheet to handle drifting layouts. All formula cells (totals, net income) are preserved.
@@ -56,6 +56,9 @@ taxauto build --year 2025
 
 # Compare generated workbooks against filed originals
 taxauto verify --year 2025
+
+# Apply dropdown validation + visual formatting to review Sheet
+python -m taxauto.sheets.format_review
 ```
 
 ## Tech stack
