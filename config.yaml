@@ -110,6 +110,8 @@ all_properties:
   - "1015 39th St"
   - "1210 College Ave"
   - "308 Lincoln Ave"
+  - "Split - All STR"
+  - "Split - All LTR"
 
 # Union of all expense categories across STR + LTR templates
 # (used for Expense Type dropdown in review Sheet)

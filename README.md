@@ -28,6 +28,7 @@ This project automates everything except the irreducible judgment calls.
 - **Transactions audit tab** — appends a `{property}_txns` sheet to each output workbook showing every transaction that contributed to the P&L values.
 - **Live Google Sheets STR reader** — reads STR earnings directly from 4 property Google Sheets via `gspread`, with fuzzy tab-name matching (`'24 earnings`, `2024 Earnings`, etc.), flexible date parsing, and automatic handling of cancelled bookings and dollar-sign formatting. Falls back to local XLSX if Sheets aren't configured.
 - **Guards** — Chase checking reconciliation (4 invariants), Rent QC reconciliation (6 invariants), eCheck-reference-based LTR double-count guard (bank deposit vs. PM owner disbursement matching), STR platform-vs-bank reconciliation, and duplicate detection. All guards fail loudly.
+- **Split property allocation** — tagging a vendor as "Split - All STR" or "Split - All LTR" in the review Sheet automatically divides the expense evenly across all 4 STR properties or all 3 LTR properties, useful for shared costs like advertising.
 - **Property alias configuration** — maps variant property names (e.g., Rent QC's "308 S Lincoln Ave" to template's "308 Lincoln Ave").
 - **Idempotent CLI** — every step is safe to re-run.
 

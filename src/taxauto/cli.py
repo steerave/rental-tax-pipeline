@@ -493,6 +493,10 @@ def cmd_build(cfg: Config, year: int) -> int:
             "amount": -interest,  # expense stored as negative for aggregator
         })
 
+    # Property groups for split logic
+    STR_PROPERTIES = ["15 Belden", "27 Farmstead Dr", "20 Valleywood Ln", "17 Oak Glen"]
+    LTR_PROPERTIES = ["1015 39th St", "1210 College Ave", "308 Lincoln Ave"]
+
     # c) Bank/credit card tagged "LTR" from review (excluding double-counted)
     for td in combined_tagged:
         cat = td.get("category", "")
@@ -504,11 +508,20 @@ def cmd_build(cfg: Config, year: int) -> int:
             continue
         prop = td.get("property", "")
         expense_type = td.get("expense_type", "other")
-        if prop:
+        amount = Decimal(str(txn_d.get("amount", "0")))
+        if prop == "Split - All LTR":
+            split_amount = amount / len(LTR_PROPERTIES)
+            for split_prop in LTR_PROPERTIES:
+                ltr_items.append({
+                    "property": split_prop,
+                    "template_category": expense_type,
+                    "amount": split_amount,
+                })
+        elif prop:
             ltr_items.append({
                 "property": prop,
                 "template_category": expense_type,
-                "amount": Decimal(str(txn_d.get("amount", "0"))),
+                "amount": amount,
             })
 
     ltr_totals = aggregate_by_property(ltr_items)
@@ -532,11 +545,20 @@ def cmd_build(cfg: Config, year: int) -> int:
         txn_d = td.get("transaction", {})
         prop = td.get("property", "")
         expense_type = td.get("expense_type", "other")
-        if prop:
+        amount = Decimal(str(txn_d.get("amount", "0")))
+        if prop == "Split - All STR":
+            split_amount = amount / len(STR_PROPERTIES)
+            for split_prop in STR_PROPERTIES:
+                str_items.append({
+                    "property": split_prop,
+                    "template_category": expense_type,
+                    "amount": split_amount,
+                })
+        elif prop:
             str_items.append({
                 "property": prop,
                 "template_category": expense_type,
-                "amount": Decimal(str(txn_d.get("amount", "0"))),
+                "amount": amount,
             })
 
     # c) Interest expense for STR properties
