@@ -1,51 +1,68 @@
-"""Pull tagged review decisions from the Google Sheet."""
+"""Pull vendor-level and transaction-level review decisions from the Google Sheet."""
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
-
-
-REQUIRED_COLUMNS = {"row_id", "date", "description", "amount", "category"}
+from typing import Any, Dict
 
 
 def pull_review_decisions(
-    client: Any,
+    spreadsheet: Any,
     *,
-    sheet_id: str,
     year: int,
-) -> List[Dict[str, Any]]:
-    """Return a list of decision dicts for rows where ``category`` is filled in.
+) -> Dict[str, Any]:
+    """Read the Vendors and Transactions tabs and return structured decisions.
 
-    Each decision dict matches the format consumed by
-    ``taxauto.categorize.learning.record_review_decisions``:
-
-        {"row_id", "description", "category", "amount", "date", "year"}
+    Returns:
+        {
+            "vendor_decisions": {vendor_key: {category, property, expense_type, count, year}},
+            "transaction_overrides": {row_id: {row_id, date, vendor, description, amount, category, property, expense_type, year}},
+            "year": year,
+        }
     """
-    spreadsheet = client.open_by_key(sheet_id)
-    worksheet = spreadsheet.worksheet(f"review_{year}")
-    rows = worksheet.get_all_records()
+    # Read Vendors tab
+    vendor_ws = spreadsheet.worksheet("Vendors")
+    vendor_rows = vendor_ws.get_all_records()
 
-    if rows:
-        missing = REQUIRED_COLUMNS - set(rows[0].keys())
-        if missing:
-            raise ValueError(
-                f"review sheet for year {year} is missing required columns: {sorted(missing)}"
-            )
-
-    decisions: List[Dict[str, Any]] = []
-    for row in rows:
-        category = str(row.get("category") or "").strip()
-        if not category:
+    vendor_decisions: Dict[str, Dict[str, Any]] = {}
+    for row in vendor_rows:
+        vendor = str(row.get("Vendor", "")).strip()
+        category = str(row.get("Category", "")).strip()
+        if not vendor or not category:
             continue
-        decisions.append(
-            {
-                "row_id": row.get("row_id"),
-                "description": row.get("description", ""),
-                "amount": str(row.get("amount", "")),
-                "date": row.get("date", ""),
+        vendor_decisions[vendor] = {
+            "category": category,
+            "property": str(row.get("Property", "")).strip(),
+            "expense_type": str(row.get("Expense Type", "")).strip(),
+            "count": row.get("Count", 0),
+            "year": year,
+        }
+
+    # Read Transactions tab for overrides
+    transaction_overrides: Dict[str, Dict[str, Any]] = {}
+    try:
+        txn_ws = spreadsheet.worksheet("Transactions")
+        txn_rows = txn_ws.get_all_records()
+        for row in txn_rows:
+            row_id = str(row.get("Row ID", "")).strip()
+            category = str(row.get("Category", "")).strip()
+            if not row_id or not category:
+                continue
+            transaction_overrides[row_id] = {
+                "row_id": row_id,
+                "date": str(row.get("Date", "")),
+                "vendor": str(row.get("Vendor", "")),
+                "description": str(row.get("Description", "")),
+                "amount": str(row.get("Amount", "")),
                 "category": category,
+                "property": str(row.get("Property", "")).strip(),
+                "expense_type": str(row.get("Expense Type", "")).strip(),
                 "year": year,
             }
-        )
+    except Exception:
+        pass
 
-    return decisions
+    return {
+        "vendor_decisions": vendor_decisions,
+        "transaction_overrides": transaction_overrides,
+        "year": year,
+    }
