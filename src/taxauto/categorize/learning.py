@@ -74,6 +74,8 @@ def record_review_decisions(
                 "occurrences": 1,
                 "learned_from": [year] if year is not None else [],
                 "ambiguous": False,
+                "property": decision.get("property", ""),
+                "expense_type": decision.get("expense_type", ""),
             }
             continue
 
@@ -85,5 +87,12 @@ def record_review_decisions(
         existing_category = entry.get("category", "")
         if existing_category and existing_category != category:
             entry["ambiguous"] = True
+
+        new_property = decision.get("property", "")
+        if new_property:
+            entry["property"] = new_property
+        new_expense_type = decision.get("expense_type", "")
+        if new_expense_type:
+            entry["expense_type"] = new_expense_type
 
     return mapping

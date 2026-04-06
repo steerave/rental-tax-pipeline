@@ -167,3 +167,18 @@ def test_record_review_decisions_flags_conflict_as_ambiguous() -> None:
 
     entry = mapping["vendors"][normalize_vendor("COMCAST INTERNET")]
     assert entry["ambiguous"] is True
+
+
+def test_record_review_decisions_learns_property_and_expense_type() -> None:
+    mapping = {"vendors": {}}
+    decisions = [
+        {"description": "MEDIACOM", "category": "STR", "year": 2024,
+         "property": "15 Belden", "expense_type": "Utilities"},
+    ]
+    record_review_decisions(mapping, decisions)
+
+    key = normalize_vendor("MEDIACOM")
+    entry = mapping["vendors"][key]
+    assert entry["category"] == "STR"
+    assert entry.get("property") == "15 Belden"
+    assert entry.get("expense_type") == "Utilities"
