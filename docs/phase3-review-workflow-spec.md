@@ -28,7 +28,7 @@ Reduce the 1,410-transaction categorization burden to ~200 vendor-level decision
 | E: Sample Amount | First transaction's amount | No |
 | F: Accounts | Comma-separated list of accounts (checking/CC) | No |
 | G: **Category** | Dropdown: STR / LTR / Personal / Skip / Split | **Yes** |
-| H: **Property** | Dropdown: 15 Belden / 27 Farmstead Dr / 20 Valleywood Ln / 17 Oak Glen / (blank) | **Yes** |
+| H: **Property** | Dropdown: all 7 properties (4 STR + 3 LTR) / (blank) | **Yes** |
 | I: **Expense Type** | Dropdown: all template expense categories (Advertising, Appliances, ... Utilities, HOA, other) | **Yes** |
 | J: Notes | Free text | **Yes** |
 
@@ -54,7 +54,7 @@ Sorted by vendor (grouped), then date within each vendor group.
 ### Dropdown validation values
 
 - **Category**: `STR`, `LTR`, `Personal`, `Skip`, `Split`
-- **Property**: `15 Belden`, `27 Farmstead Dr`, `20 Valleywood Ln`, `17 Oak Glen` (blank = N/A or shared)
+- **Property**: `15 Belden`, `27 Farmstead Dr`, `20 Valleywood Ln`, `17 Oak Glen`, `1015 39th St`, `1210 College Ave`, `308 Lincoln Ave` (blank = N/A or shared)
 - **Expense Type**: `Advertising`, `Appliances`, `Bank Charges`, `Cleaning Fees`, `Commissions/Service Fees`, `Furniture and equipment`, `Insurance`, `Interest expense`, `Landscaping`, `Licenses and Fees`, `Management Fees`, `Pest Control`, `Rent Expense`, `Renovations`, `Repairs and Maintenance`, `legal expenses`, `Supplies`, `Travel`, `Utilities`, `HOA`, `other`
 
 ## Data Flow
