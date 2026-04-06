@@ -143,9 +143,19 @@ def cmd_categorize(cfg: Config, year: int) -> int:
         _read_json(_cache_path(paths, "chase_credit_txns.json"))
     )
 
+    # Auto-skip known income deposits — these are already captured by
+    # STR Google Sheets (Airbnb/Vrbo) or Rent QC parser (owner disbursements).
+    _INCOME_DEPOSIT_PATTERNS = ["airbnb", "vrbo", "rent qc", "etsy"]
+    _CC_SKIP_PATTERNS = ["payment thank you"]
+
     # Convert Chase types to bank.Transaction for the categorizer.
     bank_txns: List[Transaction] = []
+    auto_skipped = 0
     for t in checking:
+        # Skip positive-amount (deposit) transactions matching income sources
+        if t.amount > 0 and any(p in t.description.lower() for p in _INCOME_DEPOSIT_PATTERNS):
+            auto_skipped += 1
+            continue
         bank_txns.append(Transaction(
             date=t.date,
             description=t.description,
@@ -154,6 +164,9 @@ def cmd_categorize(cfg: Config, year: int) -> int:
             account=t.account,
         ))
     for t in credit:
+        if any(p in t.description.lower() for p in _CC_SKIP_PATTERNS):
+            auto_skipped += 1
+            continue
         bank_txns.append(Transaction(
             date=t.date,
             description=t.description,
@@ -176,7 +189,8 @@ def cmd_categorize(cfg: Config, year: int) -> int:
     )
     print(
         f"[categorize] auto={len(result.auto_tagged)} "
-        f"ambiguous={len(result.ambiguous)} unknown={len(result.unknown)}"
+        f"ambiguous={len(result.ambiguous)} unknown={len(result.unknown)} "
+        f"auto_skipped={auto_skipped} (income deposits + CC payments)"
     )
     return 0
 
