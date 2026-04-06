@@ -1,13 +1,15 @@
 """Short-term rental earnings source reader.
 
-Phase 2: reads from a local XLSX file that mirrors the Google Sheets structure.
-Live Google Sheets reader deferred to Phase 3.
+Supports two backends:
+  1. Live Google Sheets via gspread (primary — Phase 3)
+  2. Local XLSX fallback (Phase 2 legacy)
 """
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -88,6 +90,125 @@ def load_str_earnings_from_xlsx(path: Path) -> List[STREarning]:
                     net_payout=net,
                 )
             )
+    return out
+
+
+def _parse_date_flexible(raw: str, year: int) -> Optional[date]:
+    """Parse dates in M/D/YY, M/D/YYYY, or M/D (infer year) formats."""
+    if not raw or not raw.strip():
+        return None
+    raw = raw.strip()
+    # Try M/D/YYYY
+    for fmt in ("%m/%d/%Y", "%m/%d/%y"):
+        try:
+            return datetime.strptime(raw, fmt).date()
+        except ValueError:
+            continue
+    # Try M/D (no year) — infer from the year parameter
+    m = re.match(r"^(\d{1,2})/(\d{1,2})$", raw)
+    if m:
+        try:
+            return date(year, int(m.group(1)), int(m.group(2)))
+        except ValueError:
+            return None
+    return None
+
+
+def _clean_decimal(raw: str) -> Optional[Decimal]:
+    """Strip $, commas, whitespace; return Decimal or None."""
+    if not raw or not raw.strip():
+        return None
+    cleaned = raw.strip().replace("$", "").replace(",", "").strip()
+    if not cleaned:
+        return None
+    try:
+        return Decimal(cleaned)
+    except (InvalidOperation, ValueError):
+        return None
+
+
+def load_str_earnings_from_gsheets(
+    sheet_configs: Dict[str, str],
+    *,
+    service_account_json: Path,
+    year: int,
+) -> List[STREarning]:
+    """Load STR earnings from Google Sheets.
+
+    sheet_configs maps property names to Google Sheet IDs.
+    Each sheet should have a tab matching the year pattern (e.g., "'24 earnings").
+    """
+    import gspread
+
+    gc = gspread.service_account(filename=str(service_account_json))
+    yy = str(year)[-2:]
+    yyyy = str(year)
+
+    # Tab name candidates in priority order
+    tab_candidates = [
+        f"'{yy} earnings",
+        f"'{yy} Earnings",
+        f"{yyyy} earnings",
+        f"{yyyy} Earnings",
+    ]
+
+    out: List[STREarning] = []
+    for prop_name, sheet_id in sheet_configs.items():
+        sh = gc.open_by_key(sheet_id)
+
+        # Find the right tab via fuzzy matching
+        worksheet = None
+        ws_titles = [ws.title for ws in sh.worksheets()]
+        for candidate in tab_candidates:
+            if candidate in ws_titles:
+                worksheet = sh.worksheet(candidate)
+                break
+        if worksheet is None:
+            # Try case-insensitive matching as last resort
+            for title in ws_titles:
+                title_lower = title.lower().strip()
+                for candidate in tab_candidates:
+                    if title_lower == candidate.lower():
+                        worksheet = sh.worksheet(title)
+                        break
+                if worksheet:
+                    break
+
+        if worksheet is None:
+            print(f"[str_sheets] WARNING: no matching tab for {prop_name} in {ws_titles}")
+            continue
+
+        rows = worksheet.get_all_values()
+        if len(rows) < 2:
+            continue
+
+        # Schema: Start Date (0), End Date (1), Payout (2), Source (3)
+        # Skip header row
+        for row in rows[1:]:
+            if len(row) < 3:
+                continue
+            # Skip blank rows
+            if all(not cell.strip() for cell in row[:3]):
+                continue
+
+            net = _clean_decimal(row[2])
+            if net is None:
+                continue  # cancelled, blank, header repeat, etc.
+
+            stay_start = _parse_date_flexible(row[0], year)
+            stay_end = _parse_date_flexible(row[1], year) if len(row) > 1 else None
+            platform = row[3].strip() if len(row) > 3 and row[3].strip() else ""
+
+            out.append(STREarning(
+                property_name=prop_name,
+                stay_start=stay_start,
+                stay_end=stay_end,
+                platform=platform,
+                gross=None,
+                fees=None,
+                net_payout=net,
+            ))
+
     return out
 
 

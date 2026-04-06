@@ -246,7 +246,11 @@ def cmd_build(cfg: Config, year: int) -> int:
     from taxauto.aggregate.rentqc_to_template import get_rentqc_mapping, map_rentqc_category
     from taxauto.guards.double_count import detect_double_counts
     from taxauto.sources.interest_expense import load_interest_expense
-    from taxauto.sources.str_sheets import load_str_earnings_from_xlsx, total_net_payout_by_property
+    from taxauto.sources.str_sheets import (
+        load_str_earnings_from_gsheets,
+        load_str_earnings_from_xlsx,
+        total_net_payout_by_property,
+    )
     from taxauto.writers.ltr_writer import write_ltr_workbook
     from taxauto.writers.str_writer import write_str_workbook
     from taxauto.writers.transactions_tab import append_transactions_tab
@@ -296,13 +300,29 @@ def cmd_build(cfg: Config, year: int) -> int:
             merged["source"] = "review"
             combined_tagged.append(merged)
 
-    # Load STR earnings
-    str_xlsx_path = _inputs_dir(cfg, year) / "str_earnings.xlsx"
+    # Load STR earnings — prefer live Google Sheets, fall back to XLSX
     str_earnings = []
     str_by_property = {}
-    if str_xlsx_path.exists():
-        str_earnings = load_str_earnings_from_xlsx(str_xlsx_path)
-        str_by_property = total_net_payout_by_property(str_earnings)
+    str_sheet_configs = cfg.raw.get("str_sheets") or {}
+    if str_sheet_configs and cfg.google_service_account_json:
+        sa_path = Path(cfg.google_service_account_json)
+        if sa_path.exists():
+            print(f"[build] loading STR earnings from {len(str_sheet_configs)} Google Sheets...")
+            str_earnings = load_str_earnings_from_gsheets(
+                str_sheet_configs,
+                service_account_json=sa_path,
+                year=year,
+            )
+            str_by_property = total_net_payout_by_property(str_earnings)
+            for prop, total in sorted(str_by_property.items()):
+                print(f"  {prop}: ${total:,.2f}")
+        else:
+            print(f"[build] service account not found at {sa_path}, trying XLSX fallback")
+    if not str_earnings:
+        str_xlsx_path = _inputs_dir(cfg, year) / "str_earnings.xlsx"
+        if str_xlsx_path.exists():
+            str_earnings = load_str_earnings_from_xlsx(str_xlsx_path)
+            str_by_property = total_net_payout_by_property(str_earnings)
 
     # Load interest expense
     interest_path = cfg.project_root / "interest_expense.yaml"

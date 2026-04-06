@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+- Live Google Sheets STR earnings reader via `gspread` with fuzzy tab-name matching, flexible date parsing, and data-quality handling (cancelled bookings, dollar signs, missing-year dates).
+- `str_sheets` config section mapping property names to Google Sheet IDs.
+- CLI `build` command now reads STR revenue from live Google Sheets when configured, with XLSX fallback.
+- Live integration test for Oak Glen Google Sheet reader.
+
 ## [0.2.0] - 2026-04-05
 
 ### Added

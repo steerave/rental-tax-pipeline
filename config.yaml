@@ -85,3 +85,11 @@ rentqc_to_ltr_template:
 # Maps Rent QC property names to template sheet names when they don't match exactly.
 property_aliases:
   "308 S Lincoln Ave": "308 Lincoln Ave"
+
+# STR Google Sheets — one per property, each with a per-year tab.
+# Tab naming: '{YY} earnings or {YYYY} earnings
+str_sheets:
+  "27 Farmstead Dr": "117nAsBcunTmuuxBB_qUh2rWxHlb8QprRyCWLpwgPtlQ"
+  "15 Belden": "1HRihF2_ZWbXAajtDE68QowCLMSnqhOx0mGPfLgCGLGM"
+  "20 Valleywood Ln": "11ul02uD-jaWVMNdxNU9qbApcSTSmPThBiSjyQh5UwtU"
+  "17 Oak Glen": "16fbni_o58JYy8Htkf2xko5ecRKRqrNwa4XUoJILjSKM"

@@ -3,10 +3,18 @@
 from pathlib import Path
 from decimal import Decimal
 
-from taxauto.sources.str_sheets import STREarning, load_str_earnings_from_xlsx, total_net_payout_by_property
+import pytest
+
+from taxauto.sources.str_sheets import (
+    STREarning,
+    load_str_earnings_from_gsheets,
+    load_str_earnings_from_xlsx,
+    total_net_payout_by_property,
+)
 
 
 FIXTURE = Path(__file__).parent / "fixtures" / "str_sheets" / "str_earnings_2024.xlsx"
+SA_PATH = Path("C:/Users/steerave/Desktop/Claude Projects/Job Search Tool/service_account.json")
 
 
 def test_loads_four_properties() -> None:
@@ -35,3 +43,20 @@ def test_totals_per_property() -> None:
     assert totals["15 Belden"] == Decimal("1980")
     for total in totals.values():
         assert total > Decimal("0")
+
+
+# --- Live Google Sheets tests (skipped if no service account) ---
+
+
+@pytest.mark.skipif(not SA_PATH.exists(), reason="No service account available")
+def test_live_sheets_reader_oak_glen() -> None:
+    earnings = load_str_earnings_from_gsheets(
+        {"17 Oak Glen": "16fbni_o58JYy8Htkf2xko5ecRKRqrNwa4XUoJILjSKM"},
+        service_account_json=SA_PATH,
+        year=2024,
+    )
+    total = sum(e.net_payout for e in earnings)
+    # Should be close to the filed $34,411.38
+    assert abs(total - Decimal("34411.38")) < Decimal("1.00"), (
+        f"Oak Glen total {total} too far from filed $34,411.38"
+    )

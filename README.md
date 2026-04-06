@@ -26,6 +26,7 @@ This project automates everything except the irreducible judgment calls.
 - **Prior-year bootstrap** — mines completed filed spreadsheets and Rent QC reports to pre-populate the vendor map (68 vendors learned from 2024 Rent QC data).
 - **Excel writers** — fill the accountant's existing P&L templates (`openpyxl`). STR writer uses hardcoded row positions; LTR writer dynamically scans column C per sheet to handle drifting layouts. All formula cells (totals, net income) are preserved.
 - **Transactions audit tab** — appends a `{property}_txns` sheet to each output workbook showing every transaction that contributed to the P&L values.
+- **Live Google Sheets STR reader** — reads STR earnings directly from 4 property Google Sheets via `gspread`, with fuzzy tab-name matching (`'24 earnings`, `2024 Earnings`, etc.), flexible date parsing, and automatic handling of cancelled bookings and dollar-sign formatting. Falls back to local XLSX if Sheets aren't configured.
 - **Guards** — Chase checking reconciliation (4 invariants), Rent QC reconciliation (6 invariants), eCheck-reference-based LTR double-count guard (bank deposit vs. PM owner disbursement matching), STR platform-vs-bank reconciliation, and duplicate detection. All guards fail loudly.
 - **Property alias configuration** — maps variant property names (e.g., Rent QC's "308 S Lincoln Ave" to template's "308 Lincoln Ave").
 - **Idempotent CLI** — every step is safe to re-run.
@@ -108,7 +109,7 @@ rental-tax-pipeline/
 
 ## Status
 
-**Phase 2 complete** — pipeline verified against real 2024 tax documents. 59.5% of LTR P&L cells match filed values within tolerance; remaining deltas are accountant manual entries (Renovations) and timing differences. 118 tests passing.
+**Phase 3 in progress** — live Google Sheets STR reader verified: 3/4 property revenues match filed totals exactly, Belden +$0.10 (rounding). 119 tests passing.
 
 See `CHANGELOG.md` and `docs/status.md` for current progress.
 
