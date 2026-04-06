@@ -93,3 +93,48 @@ str_sheets:
   "15 Belden": "1HRihF2_ZWbXAajtDE68QowCLMSnqhOx0mGPfLgCGLGM"
   "20 Valleywood Ln": "11ul02uD-jaWVMNdxNU9qbApcSTSmPThBiSjyQh5UwtU"
   "17 Oak Glen": "16fbni_o58JYy8Htkf2xko5ecRKRqrNwa4XUoJILjSKM"
+
+# Review workflow
+review:
+  editor_emails:
+    - steerave@gmail.com
+    - mclaudy@gmail.com
+  sheet_name_template: "rental-tax-review-{year}"
+
+# All properties (used for review Sheet property dropdown)
+all_properties:
+  - "15 Belden"
+  - "27 Farmstead Dr"
+  - "20 Valleywood Ln"
+  - "17 Oak Glen"
+  - "1015 39th St"
+  - "1210 College Ave"
+  - "308 Lincoln Ave"
+
+# Union of all expense categories across STR + LTR templates
+# (used for Expense Type dropdown in review Sheet)
+expense_types:
+  - "Advertising"
+  - "Appliances"
+  - "Bank Charges"
+  - "Cleaning Fees"
+  - "Commissions/Service Fees"
+  - "Furniture and equipment"
+  - "Insurance"
+  - "Interest expense"
+  - "Landscaping"
+  - "Lawn and Snow Care"
+  - "Licenses and Fees"
+  - "Management Fees"
+  - "Pest Control"
+  - "Plumbing"
+  - "Postages"
+  - "Rent Expense"
+  - "Renovations"
+  - "Repairs and Maintenance"
+  - "legal expenses"
+  - "Supplies"
+  - "Travel"
+  - "Utilities"
+  - "HOA"
+  - "other"
