@@ -1,4 +1,4 @@
-"""Command-line entry point for taxauto — Phase 2.
+"""Command-line entry point for taxauto — Phase 3.
 
 Subcommands:
     taxauto extract     --year YYYY
@@ -6,6 +6,7 @@ Subcommands:
     taxauto review push --year YYYY
     taxauto review pull --year YYYY
     taxauto build       --year YYYY
+    taxauto verify      --year YYYY
     taxauto bootstrap   --year YYYY
 
 All commands are idempotent and share an on-disk JSON cache at
@@ -181,14 +182,24 @@ def cmd_categorize(cfg: Config, year: int) -> int:
 
 
 def cmd_review_push(cfg: Config, year: int, client_factory=None) -> int:
+    """Create a new Google Sheet and push the vendor-grouped review queue."""
     from taxauto.sheets.client import get_sheets_client
+    from taxauto.sheets.create import create_and_share_sheet
     from taxauto.sheets.push import push_review_queue
 
     paths = cfg.paths_for_year(year)
-    queue = [S.dict_to_tagged(d) for d in _read_json(_cache_path(paths, "review_queue.json"))]
+    queue_path = _cache_path(paths, "review_queue.json")
+    if not queue_path.exists():
+        print("[review push] No review_queue.json found. Run 'categorize' first.", file=sys.stderr)
+        return 2
 
-    if not cfg.review_sheet_id or not cfg.google_service_account_json:
-        print("[review push] REVIEW_SHEET_ID or GOOGLE_SERVICE_ACCOUNT_JSON not set", file=sys.stderr)
+    queue = [S.dict_to_tagged(d) for d in _read_json(queue_path)]
+    if not queue:
+        print("[review push] Review queue is empty — nothing to push.")
+        return 0
+
+    if not cfg.google_service_account_json:
+        print("[review push] GOOGLE_SERVICE_ACCOUNT_JSON not set", file=sys.stderr)
         return 2
 
     if client_factory is None:
@@ -196,30 +207,54 @@ def cmd_review_push(cfg: Config, year: int, client_factory=None) -> int:
     else:
         client = client_factory()
 
-    row_ids = push_review_queue(
-        client,
-        sheet_id=cfg.review_sheet_id,
+    review_cfg = cfg.raw.get("review", {}) or {}
+    editor_emails = review_cfg.get("editor_emails", [])
+    sheet_name = review_cfg.get("sheet_name_template", "rental-tax-review-{year}").format(year=year)
+
+    spreadsheet = create_and_share_sheet(client, title=sheet_name, editor_emails=editor_emails)
+    print(f"[review push] Created Sheet: {spreadsheet.url}")
+
+    all_properties = cfg.raw.get("all_properties", []) or []
+    expense_types = cfg.raw.get("expense_types", []) or []
+
+    result = push_review_queue(
+        spreadsheet,
         tagged_transactions=queue,
         categories=cfg.categories_primary,
+        properties=all_properties,
+        expense_types=expense_types,
         year=year,
     )
-    print(f"[review push] pushed {len(row_ids)} rows for {year}")
+
+    # Cache the Sheet ID for the pull step
+    sheet_id_path = _cache_path(paths, "review_sheet_id.txt")
+    sheet_id_path.write_text(spreadsheet.id, encoding="utf-8")
+
+    print(f"[review push] {result['vendor_count']} vendors, {result['txn_count']} transactions")
     return 0
 
 
 def cmd_review_pull(cfg: Config, year: int, client_factory=None) -> int:
+    """Pull vendor + transaction decisions, resolve all queue items, update vendor mapping."""
     from taxauto.sheets.client import get_sheets_client
     from taxauto.sheets.pull import pull_review_decisions
-    from taxauto.categorize.learning import (
-        load_vendor_mapping,
-        record_review_decisions,
-        save_vendor_mapping,
-    )
+    from taxauto.categorize.learning import load_vendor_mapping, save_vendor_mapping
+    from taxauto.categorize.mapper import normalize_vendor
 
     paths = cfg.paths_for_year(year)
 
-    if not cfg.review_sheet_id or not cfg.google_service_account_json:
-        print("[review pull] REVIEW_SHEET_ID or GOOGLE_SERVICE_ACCOUNT_JSON not set", file=sys.stderr)
+    if not cfg.google_service_account_json:
+        print("[review pull] GOOGLE_SERVICE_ACCOUNT_JSON not set", file=sys.stderr)
+        return 2
+
+    # Get Sheet ID
+    sheet_id_path = _cache_path(paths, "review_sheet_id.txt")
+    if sheet_id_path.exists():
+        sheet_id = sheet_id_path.read_text(encoding="utf-8").strip()
+    elif cfg.review_sheet_id:
+        sheet_id = cfg.review_sheet_id
+    else:
+        print("[review pull] No Sheet ID found. Run 'review push' first.", file=sys.stderr)
         return 2
 
     if client_factory is None:
@@ -227,16 +262,92 @@ def cmd_review_pull(cfg: Config, year: int, client_factory=None) -> int:
     else:
         client = client_factory()
 
-    decisions = pull_review_decisions(client, sheet_id=cfg.review_sheet_id, year=year)
-    _write_json(_cache_path(paths, "review_decisions.json"), decisions)
+    spreadsheet = client.open_by_key(sheet_id)
+    decisions = pull_review_decisions(spreadsheet, year=year)
 
-    # Fold decisions into the global vendor mapping.
+    # Save raw decisions
+    _write_json(_cache_path(paths, "review_decisions_raw.json"), decisions)
+
+    # Resolve: apply vendor decisions to all review queue transactions
+    queue = _read_json(_cache_path(paths, "review_queue.json"))
+    resolved: list = []
+
+    for i, td in enumerate(queue):
+        txn = td.get("transaction", {})
+        vendor_key = normalize_vendor(txn.get("description", ""))
+        row_id = f"{year}-{i + 1:04d}"
+
+        # Check for transaction-level override first
+        override = decisions.get("transaction_overrides", {}).get(row_id)
+        if override:
+            resolved.append({
+                "transaction": txn,
+                "category": override["category"],
+                "property": override.get("property", ""),
+                "expense_type": override.get("expense_type", ""),
+                "confidence": 1.0,
+                "source": "review_override",
+            })
+            continue
+
+        # Fall back to vendor-level decision
+        vendor_decision = decisions["vendor_decisions"].get(vendor_key)
+        if vendor_decision is None:
+            continue
+
+        resolved.append({
+            "transaction": txn,
+            "category": vendor_decision["category"],
+            "property": vendor_decision.get("property", ""),
+            "expense_type": vendor_decision.get("expense_type", ""),
+            "confidence": 1.0,
+            "source": "review_vendor",
+        })
+
+    _write_json(_cache_path(paths, "resolved_decisions.json"), resolved)
+
+    # Update vendor_mapping
     vm_path = cfg.project_root / DEFAULT_VENDOR_MAPPING
     mapping = load_vendor_mapping(vm_path)
-    record_review_decisions(mapping, decisions)
+    vendors_map = mapping.setdefault("vendors", {})
+
+    for vendor_key, vd in decisions["vendor_decisions"].items():
+        if vd["category"] in ("Skip", "Split"):
+            continue
+        entry = vendors_map.get(vendor_key)
+        if entry is None:
+            vendors_map[vendor_key] = {
+                "category": vd["category"],
+                "property": vd.get("property", ""),
+                "expense_type": vd.get("expense_type", ""),
+                "confidence": 0.9,
+                "occurrences": vd.get("count", 1),
+                "learned_from": [year],
+                "ambiguous": False,
+                "source": "review",
+            }
+        else:
+            entry["occurrences"] = int(entry.get("occurrences", 0)) + vd.get("count", 1)
+            if vd.get("property"):
+                entry["property"] = vd["property"]
+            if vd.get("expense_type"):
+                entry["expense_type"] = vd["expense_type"]
+            learned_from = entry.setdefault("learned_from", [])
+            if year not in learned_from:
+                learned_from.append(year)
+            if entry.get("category") and entry["category"] != vd["category"]:
+                entry["ambiguous"] = True
+            else:
+                entry["category"] = vd["category"]
+
     save_vendor_mapping(vm_path, mapping)
 
-    print(f"[review pull] pulled {len(decisions)} decisions for {year}")
+    skipped = sum(1 for vd in decisions["vendor_decisions"].values() if vd["category"] in ("Skip", "Split"))
+    print(
+        f"[review pull] {len(decisions['vendor_decisions'])} vendors tagged "
+        f"({skipped} skip/split), {len(decisions.get('transaction_overrides', {}))} overrides, "
+        f"{len(resolved)} resolved"
+    )
     return 0
 
 
@@ -268,37 +379,17 @@ def cmd_build(cfg: Config, year: int) -> int:
         _read_json(_cache_path(paths, "rentqc_reports.json"))
     )
 
-    # Load auto-tagged + review decisions
+    # Load auto-tagged + resolved review decisions (includes property + expense_type)
     auto_tagged_dicts = _read_json(_cache_path(paths, "auto_tagged.json"))
-    review_decisions_path = _cache_path(paths, "review_decisions.json")
-    review_decisions = _read_json(review_decisions_path) if review_decisions_path.exists() else []
+    resolved_path = _cache_path(paths, "resolved_decisions.json")
+    resolved_decisions = _read_json(resolved_path) if resolved_path.exists() else []
 
-    # Merge auto-tagged and review decisions into a combined list
+    # Combine auto-tagged + resolved
     combined_tagged = list(auto_tagged_dicts)
-
-    review_queue_path = _cache_path(paths, "review_queue.json")
-    if review_queue_path.exists() and review_decisions:
-        queue = _read_json(review_queue_path)
-        fingerprint = {
-            (
-                q["transaction"]["date"],
-                q["transaction"]["description"],
-                q["transaction"]["amount"],
-            ): q
-            for q in queue
-        }
-        for d in review_decisions:
-            key = (d.get("date", ""), d.get("description", ""), str(d.get("amount", "")))
-            source = fingerprint.get(key)
-            if source is None:
-                continue
-            if d["category"] in ("Skip", "Split"):
-                continue
-            merged = dict(source)
-            merged["category"] = d["category"]
-            merged["confidence"] = 1.0
-            merged["source"] = "review"
-            combined_tagged.append(merged)
+    for rd in resolved_decisions:
+        if rd.get("category") in ("Skip", "Split", ""):
+            continue
+        combined_tagged.append(rd)
 
     # Load STR earnings — prefer live Google Sheets, fall back to XLSX
     str_earnings = []
@@ -397,9 +488,14 @@ def cmd_build(cfg: Config, year: int) -> int:
         key = (txn_d.get("date", ""), txn_d.get("description", ""), txn_d.get("amount", ""))
         if key in double_counted_descriptions:
             continue
-        # These need a property and template_category from the review decision
-        # For now, skip bank/CC LTR items that don't have property assignment
-        # (they'll be handled in the full review workflow)
+        prop = td.get("property", "")
+        expense_type = td.get("expense_type", "other")
+        if prop:
+            ltr_items.append({
+                "property": prop,
+                "template_category": expense_type,
+                "amount": Decimal(str(txn_d.get("amount", "0"))),
+            })
 
     ltr_totals = aggregate_by_property(ltr_items)
 
@@ -414,12 +510,20 @@ def cmd_build(cfg: Config, year: int) -> int:
             "amount": net,
         })
 
-    # b) Bank/credit card tagged "STR" from categorization
+    # b) STR expenses from categorized bank/CC transactions
     for td in combined_tagged:
         cat = td.get("category", "")
         if cat != "STR":
             continue
-        # Same note: needs property + template_category from review
+        txn_d = td.get("transaction", {})
+        prop = td.get("property", "")
+        expense_type = td.get("expense_type", "other")
+        if prop:
+            str_items.append({
+                "property": prop,
+                "template_category": expense_type,
+                "amount": Decimal(str(txn_d.get("amount", "0"))),
+            })
 
     # c) Interest expense for STR properties
     # (STR interest if applicable - configurable per property)
@@ -485,6 +589,42 @@ def cmd_build(cfg: Config, year: int) -> int:
     return 0
 
 
+def cmd_verify(cfg: Config, year: int) -> int:
+    """Compare generated output against filed XLSX and print a delta report."""
+    from taxauto.verify.compare import compare_workbooks, format_comparison_table
+
+    paths = cfg.paths_for_year(year)
+
+    # STR comparison
+    str_generated = paths.outputs / f"{year} - STR - Income Expense summary.xlsx"
+    # Filed STR may have a trailing space in filename
+    str_filed = paths.outputs / f"{year} - STR - Income Expense summary .xlsx"
+    if not str_filed.exists():
+        str_filed = paths.outputs / f"{year} - STR - Income Expense summary.xlsx"
+
+    if str_generated.exists() and str_filed.exists() and str_generated.resolve() != str_filed.resolve():
+        print("\n=== STR Comparison ===")
+        results = compare_workbooks(str_filed, str_generated)
+        print(format_comparison_table(results))
+    else:
+        print("[verify] STR: filed or generated workbook not found (or same file)")
+
+    # LTR comparison
+    ltr_generated = paths.outputs / f"{year} - LTR - Income Expense summary.xlsx"
+    ltr_filed = paths.outputs / f"LTR- Income Expense summary{year}.xlsx"
+    if not ltr_filed.exists():
+        ltr_filed = paths.outputs / f"{year} - LTR - Income Expense summary.xlsx"
+
+    if ltr_generated.exists() and ltr_filed.exists() and ltr_generated.resolve() != ltr_filed.resolve():
+        print("\n=== LTR Comparison ===")
+        results = compare_workbooks(ltr_filed, ltr_generated)
+        print(format_comparison_table(results))
+    else:
+        print("[verify] LTR: filed or generated workbook not found (or same file)")
+
+    return 0
+
+
 def cmd_bootstrap(cfg: Config, year: int) -> int:
     """Learn vendor mappings from Rent QC owner statements."""
     from taxauto.parsers.rent_qc import parse_rent_qc_pdf
@@ -530,6 +670,7 @@ def _build_parser() -> argparse.ArgumentParser:
     add_year(sub.add_parser("extract"))
     add_year(sub.add_parser("categorize"))
     add_year(sub.add_parser("build"))
+    add_year(sub.add_parser("verify"))
     add_year(sub.add_parser("bootstrap"))
 
     review = sub.add_parser("review")
@@ -553,6 +694,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         return cmd_categorize(cfg, year)
     if args.command == "build":
         return cmd_build(cfg, year)
+    if args.command == "verify":
+        return cmd_verify(cfg, year)
     if args.command == "bootstrap":
         return cmd_bootstrap(cfg, year)
     if args.command == "review":
