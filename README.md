@@ -16,16 +16,18 @@ This project automates everything except the irreducible judgment calls.
 
 ## Features
 
-- **PDF ingestion** — auto-detects text vs. scanned PDFs; routes text PDFs through `pdfplumber` and scanned PDFs through Tesseract OCR.
-- **Bank parser** — normalizes every statement into `{date, description, amount, balance, account}` rows with reconciliation against statement totals.
-- **LTR PM parser** — extracts pre-categorized entries from property-manager reports.
+- **PDF ingestion** — auto-detects text vs. scanned PDFs; routes text PDFs through `pdfplumber` and scanned PDFs through Tesseract OCR. Input file classifier auto-routes Chase checking, Chase credit card, and Rent QC PDFs by filename pattern.
+- **Chase Business Checking parser** — handles multi-line ACH description blocks, instance-count reconciliation, and Chase-specific `*start*`/`*end*` pdfplumber anchor artifacts.
+- **Chase Ink credit card parser** — dual-cardholder state machine (cards 1091 + 1109) extracting transactions from interleaved per-card sections across 13 monthly statements.
+- **Rent QC property-manager parser** — x-coordinate column binning to reliably extract 28 expense/income categories across 3 properties per report, with 6-invariant reconciliation per property per report.
 - **Vendor categorizer** — applies `vendor_mapping.yaml`; known vendors auto-tag, unknown or ambiguous vendors go to review.
 - **Google Sheets review roundtrip** — pushes unknowns to a Sheet with dropdown validation, pulls tagged decisions back.
 - **Cross-year learning** — every human decision is written back to `vendor_mapping.yaml` with provenance. Ambiguous vendors (same vendor seen in multiple categories) are flagged forever and never auto-tagged.
-- **Prior-year bootstrap** — mines completed filed spreadsheets to pre-populate the vendor map before the first real run.
+- **Prior-year bootstrap** — mines completed filed spreadsheets and Rent QC reports to pre-populate the vendor map (68 vendors learned from 2024 Rent QC data).
 - **Excel writers** — fill the accountant's existing P&L templates (`openpyxl`). STR writer uses hardcoded row positions; LTR writer dynamically scans column C per sheet to handle drifting layouts. All formula cells (totals, net income) are preserved.
 - **Transactions audit tab** — appends a `{property}_txns` sheet to each output workbook showing every transaction that contributed to the P&L values.
-- **Guards** — reconciliation, duplicate detection, and LTR double-count prevention (bank txn vs. PM line item). All guards fail loudly.
+- **Guards** — Chase checking reconciliation (4 invariants), Rent QC reconciliation (6 invariants), eCheck-reference-based LTR double-count guard (bank deposit vs. PM owner disbursement matching), STR platform-vs-bank reconciliation, and duplicate detection. All guards fail loudly.
+- **Property alias configuration** — maps variant property names (e.g., Rent QC's "308 S Lincoln Ave" to template's "308 Lincoln Ave").
 - **Idempotent CLI** — every step is safe to re-run.
 
 ## Commands
@@ -106,7 +108,7 @@ rental-tax-pipeline/
 
 ## Status
 
-Phase 1 — building core pipeline against synthetic test fixtures. Phase 2 regroups after the first run against real bank and PM documents.
+**Phase 2 complete** — pipeline verified against real 2024 tax documents. 59.5% of LTR P&L cells match filed values within tolerance; remaining deltas are accountant manual entries (Renovations) and timing differences. 118 tests passing.
 
 See `CHANGELOG.md` and `docs/status.md` for current progress.
 

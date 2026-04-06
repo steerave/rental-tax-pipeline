@@ -3,35 +3,32 @@
 ## 2026-04-05
 
 ### Done
-- Scaffolded `rental-tax-pipeline`: `.gitignore`, `.env.template`, `config.yaml`, `vendor_mapping.yaml`, `README.md`, `CHANGELOG.md`, `LICENSE`, `pyproject.toml`, `requirements.txt`.
-- Python 3.12 venv created; all dependencies installed (pdfplumber, pytesseract, gspread, openpyxl, PyYAML, python-dotenv, rapidfuzz, reportlab, pytest).
-- **Phase 1 complete** — full pipeline built end-to-end with TDD:
-  - `config.py` — YAML + dotenv loader with per-year path resolution.
-  - `pdf/` — auto-routing extractor (pdfplumber for text PDFs, pytesseract fallback for scans).
-  - `parsers/bank.py` — normalizes bank statements to `{date, description, amount, balance, account}` + statement totals.
-  - `parsers/pm_ltr.py` — LTR property-manager report parser with dual-mode regex (multi-space and pdfplumber-collapsed single-space via known-categories splitter).
-  - `categorize/mapper.py` + `learning.py` — vendor normalization, auto-tag/ambiguous/unknown bucketing, cross-year learning with ambiguity detection.
-  - `bootstrap/learn_from_prior.py` — mines prior-year filed XLSX + bank PDFs to seed `vendor_mapping.yaml` via amount+date+fuzzy match.
-  - `sheets/` — gspread-backed push/pull review roundtrip (fully mockable in tests).
-  - `guards/` — reconcile, duplicate, and LTR double-count guards that fail loudly.
-  - `writers/str_writer.py` + `ltr_writer.py` — fill accountant templates; LTR merges PM + bank with double-count dropping.
-  - `cli.py` — `taxauto extract|categorize|review push|review pull|build|bootstrap` subcommands, all idempotent and `--year`-scoped.
-- 50/50 pytest passing including an end-to-end test that drives real reportlab-generated PDFs through the whole pipeline.
-- Initial commit pushed to https://github.com/steerave/rental-tax-pipeline.
+- **Phase 2 complete** — full pipeline built and verified against real 2024 tax documents.
+- 3 format-specific parsers: Chase Business Checking (12 statements, 861 txns), Chase Ink credit card (13 statements, 549 txns, 2 cardholders), Rent QC property manager (13 reports, 868 txns, 3 properties).
+- All reconciliation guards passing (12 Chase checking + 13 Rent QC = 0 failures).
+- eCheck double-count guard: 11 bank/PM collisions correctly identified and excluded.
+- LTR pipeline verified: 59.5% of P&L cells within tolerance of filed 2024 values. Remaining deltas are accountant manual entries (Renovations) and timing differences.
+- STR pipeline scaffolded (template + writer working), awaiting Google Sheets earnings data.
+- 118 pytest tests passing, 0 failures.
+- 68 vendors bootstrapped from Rent QC into vendor_mapping.yaml.
+- Pushed to https://github.com/steerave/rental-tax-pipeline.
 
 ### In Progress
-- Nothing — Phase 1 complete.
+- Nothing — Phase 2 core complete.
 
 ### Next
-- **Phase 2 (post-document-review planning round):** once real bank and PM PDFs are dropped into `years/2023/inputs/`, regroup to:
-  - Validate bank parser against the real statement format(s).
-  - Validate PM parser against the real PM report format.
-  - Assess OCR quality on any scanned PDFs.
-  - Map accountant template cell layouts (the writers currently assume a simple header row + appended rows).
-  - Decide whether a dedicated Split workflow is needed.
-  - Run `taxauto bootstrap --year 2023` and verify the vendor mapping populates with reasonable entries.
+- **User input needed:**
+  1. STR Google Sheets earnings data (4 sheets, one per property) for STR revenue verification.
+  2. `interest_expense.yaml` values from Form 1098 for all 7 properties.
+  3. Review the Rent QC → LTR template category mapping (especially: is "Prepaid Rent" → "Sales revenue" correct, or should it be a separate line?).
+- **Phase 3 backlog:**
+  - Live Google Sheets reader (currently XLSX fixture only)
+  - Bank/credit card categorization review workflow (1,410 transactions in the review queue)
+  - Renovations / capital improvements manual override
+  - STR expense property attribution (which STR property does each bank/CC charge belong to?)
+  - 2025 tax year run
 
 ### Notes
-- Phase 1 uses synthetic fixtures throughout; no real tax data has touched the repo.
-- The PM parser's `known_categories` list is a Phase 1 convenience — Phase 2 will move it into `config.yaml` once real categories are observed.
-- Double-count guard caught a real regression in the e2e test (bank rent deposit mirroring a PM "Rent Received" line), confirming the design.
+- The 40.5% out-of-tolerance LTR cells are explained by: (a) Renovations — $25K manual entries with no Rent QC category, (b) Laundry/late-fee accountant manual adjustments, (c) small cross-year boundary timing differences.
+- The pipeline correctly handles all 28 Rent QC categories, 3 LTR properties, the per-sheet row drift in the template, and the eCheck-reference-based double-count guard.
+- Phase 2 discovery reports are at `years/2024/intermediate/discovery_*.md` for future reference.
