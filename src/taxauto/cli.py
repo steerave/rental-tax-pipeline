@@ -340,7 +340,7 @@ def cmd_review_pull(cfg: Config, year: int, client_factory=None) -> int:
     vendors_map = mapping.setdefault("vendors", {})
 
     for vendor_key, vd in decisions["vendor_decisions"].items():
-        if vd["category"] in ("Skip", "Split"):
+        if vd["category"] in ("Skip", "Split", "STR - Split", "LTR - Split"):
             continue
         entry = vendors_map.get(vendor_key)
         if entry is None:
@@ -370,7 +370,7 @@ def cmd_review_pull(cfg: Config, year: int, client_factory=None) -> int:
 
     save_vendor_mapping(vm_path, mapping)
 
-    skipped = sum(1 for vd in decisions["vendor_decisions"].values() if vd["category"] in ("Skip", "Split"))
+    skipped = sum(1 for vd in decisions["vendor_decisions"].values() if vd["category"] in ("Skip", "Split", "STR - Split", "LTR - Split"))
     print(
         f"[review pull] {len(decisions['vendor_decisions'])} vendors tagged "
         f"({skipped} skip/split), {len(decisions.get('transaction_overrides', {}))} overrides, "
@@ -415,7 +415,8 @@ def cmd_build(cfg: Config, year: int) -> int:
     # Combine auto-tagged + resolved
     combined_tagged = list(auto_tagged_dicts)
     for rd in resolved_decisions:
-        if rd.get("category") in ("Skip", "Split", ""):
+        cat = rd.get("category", "")
+        if cat in ("Skip", "Split", ""):
             continue
         combined_tagged.append(rd)
 
@@ -511,10 +512,10 @@ def cmd_build(cfg: Config, year: int) -> int:
     STR_PROPERTIES = ["15 Belden", "27 Farmstead Dr", "20 Valleywood Ln", "17 Oak Glen"]
     LTR_PROPERTIES = ["1015 39th St", "1210 College Ave", "308 Lincoln Ave"]
 
-    # c) Bank/credit card tagged "LTR" from review (excluding double-counted)
+    # c) Bank/credit card tagged "LTR" or "LTR - Split" from review (excluding double-counted)
     for td in combined_tagged:
         cat = td.get("category", "")
-        if cat != "LTR":
+        if cat not in ("LTR", "LTR - Split"):
             continue
         txn_d = td.get("transaction", {})
         key = (txn_d.get("date", ""), txn_d.get("description", ""), txn_d.get("amount", ""))
@@ -523,7 +524,7 @@ def cmd_build(cfg: Config, year: int) -> int:
         prop = td.get("property", "")
         expense_type = td.get("expense_type", "other")
         amount = Decimal(str(txn_d.get("amount", "0")))
-        if prop == "Split - All LTR":
+        if cat == "LTR - Split":
             split_amount = amount / len(LTR_PROPERTIES)
             for split_prop in LTR_PROPERTIES:
                 ltr_items.append({
@@ -554,13 +555,13 @@ def cmd_build(cfg: Config, year: int) -> int:
     # b) STR expenses from categorized bank/CC transactions
     for td in combined_tagged:
         cat = td.get("category", "")
-        if cat != "STR":
+        if cat not in ("STR", "STR - Split"):
             continue
         txn_d = td.get("transaction", {})
         prop = td.get("property", "")
         expense_type = td.get("expense_type", "other")
         amount = Decimal(str(txn_d.get("amount", "0")))
-        if prop == "Split - All STR":
+        if cat == "STR - Split":
             split_amount = amount / len(STR_PROPERTIES)
             for split_prop in STR_PROPERTIES:
                 str_items.append({

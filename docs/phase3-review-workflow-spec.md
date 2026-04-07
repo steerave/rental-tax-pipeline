@@ -53,8 +53,8 @@ Sorted by vendor (grouped), then date within each vendor group.
 
 ### Dropdown validation values
 
-- **Category**: `STR`, `LTR`, `Personal`, `Skip`, `Split`
-- **Property**: `15 Belden`, `27 Farmstead Dr`, `20 Valleywood Ln`, `17 Oak Glen`, `1015 39th St`, `1210 College Ave`, `308 Lincoln Ave` (blank = N/A or shared)
+- **Category**: `STR`, `LTR`, `Personal`, `Skip`, `Split`, `STR - Split`, `LTR - Split`
+- **Property**: `15 Belden`, `27 Farmstead Dr`, `20 Valleywood Ln`, `17 Oak Glen`, `1015 39th St`, `1210 College Ave`, `308 Lincoln Ave` (blank = N/A or shared). Split options removed — use `STR - Split` / `LTR - Split` categories instead.
 - **Expense Type**: `Advertising`, `Appliances`, `Bank Charges`, `Cleaning Fees`, `Commissions/Service Fees`, `Furniture and equipment`, `Insurance`, `Interest expense`, `Landscaping`, `Licenses and Fees`, `Management Fees`, `Pest Control`, `Rent Expense`, `Renovations`, `Repairs and Maintenance`, `legal expenses`, `Supplies`, `Travel`, `Utilities`, `HOA`, `other`
 
 ## Data Flow

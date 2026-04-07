@@ -71,9 +71,9 @@ URL: https://docs.google.com/spreadsheets/d/1l3pXIxVcb4NVjQO-oemSbnkkjU8JuJZF9Nz
 
 ### Dropdown values
 
-**Category (column G):** STR, LTR, Personal, Skip, Split
+**Category (column G):** STR, LTR, Personal, Skip, Split, STR - Split, LTR - Split
 
-**Property (column H):** 15 Belden, 27 Farmstead Dr, 20 Valleywood Ln, 17 Oak Glen, 1015 39th St, 1210 College Ave, 308 Lincoln Ave, Split - All STR, Split - All LTR
+**Property (column H):** 15 Belden, 27 Farmstead Dr, 20 Valleywood Ln, 17 Oak Glen, 1015 39th St, 1210 College Ave, 308 Lincoln Ave
 
 **Expense Type (column I):** Advertising, Appliances, Bank Charges, Cleaning Fees, Commissions/Service Fees, Furniture and equipment, Insurance, Interest expense, Landscaping, Lawn and Snow Care, Licenses and Fees, Management Fees, Pest Control, Plumbing, Postages, Rent Expense, Renovations, Repairs and Maintenance, legal expenses, Supplies, Travel, Utilities, HOA, other
 
@@ -82,8 +82,8 @@ URL: https://docs.google.com/spreadsheets/d/1l3pXIxVcb4NVjQO-oemSbnkkjU8JuJZF9Nz
 | Scenario | How to tag |
 |---|---|
 | Vendor serves one property | Category + Property + Expense Type on Vendors tab |
-| Vendor serves multiple STR properties | Category=STR, Property=**Split - All STR**, Expense Type. Pipeline splits amount evenly across 4 STR properties. |
-| Vendor serves multiple LTR properties | Category=LTR, Property=**Split - All LTR**, Expense Type. Pipeline splits across 3 LTR. |
+| Vendor serves multiple STR properties | Category=**STR - Split**, Property=(leave blank), Expense Type. Pipeline splits amount evenly across 4 STR properties. |
+| Vendor serves multiple LTR properties | Category=**LTR - Split**, Property=(leave blank), Expense Type. Pipeline splits across 3 LTR. |
 | Physical checks (no merchant info) | Leave Vendors tab blank. Tag each check in Transactions tab using Margarete's checkbook. |
 | Credit card payments ("Payment Thank You") | **Auto-skipped** — filtered out during categorize step. |
 | Airbnb/Vrbo bank deposits | **Auto-skipped** — STR revenue comes from Google Sheets, not bank. |

@@ -25,6 +25,8 @@ categories:
     - Personal
     - Skip
     - Split
+    - STR - Split
+    - LTR - Split
   # Sub-categories within a side (expanded in Phase 2 once real templates are known)
   str_subcategories: []
   ltr_subcategories: []
@@ -110,8 +112,6 @@ all_properties:
   - "1015 39th St"
   - "1210 College Ave"
   - "308 Lincoln Ave"
-  - "Split - All STR"
-  - "Split - All LTR"
 
 # Union of all expense categories across STR + LTR templates
 # (used for Expense Type dropdown in review Sheet)

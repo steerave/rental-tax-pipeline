@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 - Auto-skip income deposits and CC payments from review queue: Airbnb/Vrbo deposits (STR income), Rent QC deposits (LTR owner disbursements), Etsy payouts, and "Payment Thank You" credit card entries are now automatically excluded from categorization since they are already captured by dedicated data sources. Reduces review queue from 1410 to 1085 transactions and from 878 to 574 vendors.
-- "Split - All STR" and "Split - All LTR" property options: tagging a vendor with these values in the review Sheet divides the expense evenly across all 4 STR properties or all 3 LTR properties respectively.
+- "STR - Split" and "LTR - Split" category options: tagging a vendor with these Category values in the review Sheet divides the expense evenly across all 4 STR or all 3 LTR properties respectively. Property column left blank. (Replaces former "Split - All STR"/"Split - All LTR" property values.)
 - Standalone review Sheet formatting script (`python -m taxauto.sheets.format_review`) that applies dropdown validation (Category/Property/Expense Type), frozen bold headers, column widths, currency formatting, editable-column yellow highlighting, alternating row colors on Vendors tab, and auto-filters on both tabs.
 - `push.py` dropdown validation now uses reliable raw Sheets API `batch_update` instead of broken `add_validation` method.
 - Live Google Sheets STR earnings reader via `gspread` with fuzzy tab-name matching, flexible date parsing, and data-quality handling (cancelled bookings, dollar signs, missing-year dates).
