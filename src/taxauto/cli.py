@@ -588,8 +588,8 @@ def cmd_build(cfg: Config, year: int) -> int:
     str_template = cfg.template_str
     ltr_template = cfg.template_ltr
 
-    str_out = paths.outputs / f"{year} - STR - Income Expense summary.xlsx"
-    ltr_out = paths.outputs / f"{year} - LTR - Income Expense summary.xlsx"
+    str_out = paths.outputs / f"{year} - STR - Income Expense summary_generated.xlsx"
+    ltr_out = paths.outputs / f"{year} - LTR - Income Expense summary_generated.xlsx"
 
     if str_template.exists():
         write_str_workbook(
@@ -647,31 +647,32 @@ def cmd_verify(cfg: Config, year: int) -> int:
     paths = cfg.paths_for_year(year)
 
     # STR comparison
-    str_generated = paths.outputs / f"{year} - STR - Income Expense summary.xlsx"
-    # Filed STR may have a trailing space in filename
+    str_generated = paths.outputs / f"{year} - STR - Income Expense summary_generated.xlsx"
     str_filed = paths.outputs / f"{year} - STR - Income Expense summary .xlsx"
     if not str_filed.exists():
         str_filed = paths.outputs / f"{year} - STR - Income Expense summary.xlsx"
 
-    if str_generated.exists() and str_filed.exists() and str_generated.resolve() != str_filed.resolve():
+    if str_generated.exists() and str_filed.exists():
         print("\n=== STR Comparison ===")
         results = compare_workbooks(str_filed, str_generated)
         print(format_comparison_table(results))
     else:
-        print("[verify] STR: filed or generated workbook not found (or same file)")
+        print("[verify] STR: filed or generated workbook not found")
+        print(f"  filed:     {str_filed}")
+        print(f"  generated: {str_generated}")
 
     # LTR comparison
-    ltr_generated = paths.outputs / f"{year} - LTR - Income Expense summary.xlsx"
+    ltr_generated = paths.outputs / f"{year} - LTR - Income Expense summary_generated.xlsx"
     ltr_filed = paths.outputs / f"LTR- Income Expense summary{year}.xlsx"
-    if not ltr_filed.exists():
-        ltr_filed = paths.outputs / f"{year} - LTR - Income Expense summary.xlsx"
 
-    if ltr_generated.exists() and ltr_filed.exists() and ltr_generated.resolve() != ltr_filed.resolve():
+    if ltr_generated.exists() and ltr_filed.exists():
         print("\n=== LTR Comparison ===")
         results = compare_workbooks(ltr_filed, ltr_generated)
         print(format_comparison_table(results))
     else:
-        print("[verify] LTR: filed or generated workbook not found (or same file)")
+        print("[verify] LTR: filed or generated workbook not found")
+        print(f"  filed:     {ltr_filed}")
+        print(f"  generated: {ltr_generated}")
 
     return 0
 
