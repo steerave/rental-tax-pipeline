@@ -92,6 +92,15 @@ URL: https://docs.google.com/spreadsheets/d/1l3pXIxVcb4NVjQO-oemSbnkkjU8JuJZF9Nz
 | Etsy business expenses (Printify, Midjourney, eRank, Shopify, etc.) | Category=**Skip**. Etsy business is handled outside this pipeline. |
 | Mortgage payments | Category=**Skip**. Interest is handled via `interest_expense.yaml`. |
 | Owner transfers between accounts | Category=**Skip**. |
+| "Home Office" expenses (from Margarete's sheet) | Category=**Skip**. Not on any property P&L. |
+| "Short Term Rentals" (from Margarete's sheet) | Category=**STR - Split**. Shared across all 4 STR properties. |
+
+### Margarete's 2025 expense worksheet
+URL: https://docs.google.com/spreadsheets/d/14l3vIA_t5RVRTZBeGQeAU0HIkT5W33YXQkD5eXtfQQo
+Tab: `2025 tax info` — 493 transactions with Date, Cost, Source, Description, Type (property).
+Used to pre-fill the review Sheet by matching bank/CC transactions on date + amount.
+Property name mapping: belden→15 Belden, valleywood→20 Valleywood Ln, Oak Glen→17 Oak Glen, Farmstead→27 Farmstead Dr, Home Office→Skip, Short Term Rentals→STR-Split.
+Description mapping: cleaning fees→Cleaning Fees, Utility→Utilities, service→(review needed), supplies→Supplies, etc.
 
 ### Auto-skip patterns (in categorize step)
 Checking deposits (positive amounts) containing: `airbnb`, `vrbo`, `rent qc`, `etsy`

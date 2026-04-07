@@ -53,15 +53,18 @@ class ChaseCheckingStatement:
     total_deposits: Optional[Decimal] = None
     total_checks_paid: Optional[Decimal] = None
     total_electronic_withdrawals: Optional[Decimal] = None
+    total_fees: Optional[Decimal] = None
     instance_counts: Dict[str, Optional[int]] = field(default_factory=lambda: {
         "deposits": None,
         "checks_paid": None,
         "electronic_withdrawals": None,
+        "fees": None,
         "total": None,
     })
     deposits: List[ChaseTransaction] = field(default_factory=list)
     checks_paid: List[ChaseTransaction] = field(default_factory=list)
     electronic_withdrawals: List[ChaseTransaction] = field(default_factory=list)
+    fees: List[ChaseTransaction] = field(default_factory=list)
 
 
 # --- Regexes ------------------------------------------------------------
@@ -74,7 +77,7 @@ _PERIOD_RE = re.compile(
 # may be prefixed by `$` and may carry a leading minus sign.
 _SUMMARY_ROW_RE = re.compile(
     r"^\s*(?P<label>Beginning Balance|Deposits and Additions|Checks Paid|"
-    r"Electronic Withdrawals|Ending Balance)"
+    r"Electronic Withdrawals|Fees|Ending Balance)"
     r"(?:\s+(?P<count>\d+))?"
     r"\s+(?P<sign>-)?\$?(?P<amount>[\d,]+\.\d{2})\s*$"
 )
@@ -91,11 +94,18 @@ _CHECK_RE = re.compile(
     r"\$?(?P<amount>[\d,]+\.\d{2})\s*$"
 )
 
+# Fallback for check lines where OCR dropped the check number.
+# These start with `^ MM/DD amount` (no leading check number).
+_CHECK_NO_NUM_RE = re.compile(
+    r"^\*?\^\s+(?P<date>\d{2}/\d{2})\s+\$?(?P<amount>[\d,]+\.\d{2})\s*$"
+)
+
 # Noise lines to drop entirely before folding continuations.
 _NOISE_EXACT = {
     "DEPOSITS AND ADDITIONS",
     "CHECKS PAID",
     "ELECTRONIC WITHDRAWALS",
+    "FEES",
     "DATE DESCRIPTION AMOUNT",
     "DATE",
     "CHECK NO. DESCRIPTION PAID AMOUNT",
@@ -103,7 +113,7 @@ _NOISE_EXACT = {
 }
 
 _TOTAL_LINE_RE = re.compile(
-    r"^\s*Total\s+(Deposits and Additions|Checks Paid|Electronic Withdrawals)\s+\$?[\d,]+\.\d{2}\s*$"
+    r"^\s*Total\s+(Deposits and Additions|Checks Paid|Electronic Withdrawals|Fees)\s+\$?[\d,]+\.\d{2}\s*$"
 )
 
 # Section markers -- used to slice the cleaned text.
@@ -113,6 +123,7 @@ _SECTION_HEADERS = [
     "DEPOSITS AND ADDITIONS",
     "CHECKS PAID",
     "ELECTRONIC WITHDRAWALS",
+    "FEES",
     "DAILY ENDING BALANCE",
 ]
 
@@ -291,21 +302,42 @@ def _parse_checks_paid(
     out: List[ChaseTransaction] = []
     for line in lines:
         m = _CHECK_RE.match(line)
-        if not m:
-            continue
-        mm, dd = m.group("date").split("/")
-        txn_date = date(year, int(mm), int(dd))
-        amt = _to_decimal(m.group("amount"), negative=True)
-        out.append(
-            ChaseTransaction(
-                date=txn_date,
-                description=f"Check #{m.group('checkno')}",
-                amount=amt,
-                account=account_label,
-                section="checks_paid",
-                check_number=m.group("checkno"),
+        if m:
+            mm, dd = m.group("date").split("/")
+            txn_date = date(year, int(mm), int(dd))
+            amt = _to_decimal(m.group("amount"), negative=True)
+            out.append(
+                ChaseTransaction(
+                    date=txn_date,
+                    description=f"Check #{m.group('checkno')}",
+                    amount=amt,
+                    account=account_label,
+                    section="checks_paid",
+                    check_number=m.group("checkno"),
+                )
             )
-        )
+            continue
+        # Fallback: OCR dropped the check number (line starts with `^ MM/DD`)
+        m2 = _CHECK_NO_NUM_RE.match(line)
+        if m2:
+            mm, dd = m2.group("date").split("/")
+            txn_date = date(year, int(mm), int(dd))
+            amt = _to_decimal(m2.group("amount"), negative=True)
+            warnings.warn(
+                f"Chase parser: check line missing check number, "
+                f"inferred from context: {line!r}",
+                stacklevel=2,
+            )
+            out.append(
+                ChaseTransaction(
+                    date=txn_date,
+                    description="Check #(unknown)",
+                    amount=amt,
+                    account=account_label,
+                    section="checks_paid",
+                    check_number=None,
+                )
+            )
     return out
 
 
@@ -345,6 +377,9 @@ def parse_chase_checking(text: str, *, account_label: str) -> ChaseCheckingState
         if "Electronic Withdrawals" in summary:
             stmt.total_electronic_withdrawals = summary["Electronic Withdrawals"]["amount"]  # type: ignore[index]
             stmt.instance_counts["electronic_withdrawals"] = summary["Electronic Withdrawals"]["count"]  # type: ignore[index]
+        if "Fees" in summary:
+            stmt.total_fees = summary["Fees"]["amount"]  # type: ignore[index]
+            stmt.instance_counts["fees"] = summary["Fees"]["count"]  # type: ignore[index]
 
     # Guard: if NONE of the 5 summary fields were populated, the CHECKING
     # SUMMARY block is missing entirely (format change or truncated text).
@@ -386,6 +421,16 @@ def parse_chase_checking(text: str, *, account_label: str) -> ChaseCheckingState
             year=year,
             account_label=account_label,
             section="electronic_withdrawals",
+            negative=True,
+        )
+
+    # Fees (negative — e.g., monthly service fees, check supply orders)
+    if "FEES" in sections:
+        stmt.fees = _parse_deposits_or_ew(
+            sections["FEES"],
+            year=year,
+            account_label=account_label,
+            section="fees",
             negative=True,
         )
 

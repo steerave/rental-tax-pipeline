@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from decimal import Decimal
-from typing import Any, Dict, Iterable, List, Sequence
+from typing import Any, Dict, Iterable, List, Optional, Sequence
 
 from taxauto.categorize.mapper import TaggedTransaction, normalize_vendor
 
@@ -82,28 +82,70 @@ def push_review_queue(
     properties: Sequence[str],
     expense_types: Sequence[str],
     year: int,
+    prefills: Optional[Dict[int, Dict[str, str]]] = None,
+    vendor_tab_name: str = "Vendors",
+    txn_tab_name: str = "Transactions",
 ) -> Dict[str, int]:
     """Write vendor-grouped review queue to two tabs on the spreadsheet.
 
-    Returns {"vendor_count": N, "txn_count": M}.
+    If *prefills* is provided (keyed by review-queue index), matching
+    transactions will have their Category / Property / Expense Type columns
+    pre-populated from Margarete's expense worksheet.
+
+    Tab names can be overridden to allow year-specific tabs (e.g.
+    "Vendors 2025", "Transactions 2025") on a shared spreadsheet.
+
+    Returns {"vendor_count": N, "txn_count": M, "prefilled": P}.
     """
     items = list(tagged_transactions)
     if not items:
-        return {"vendor_count": 0, "txn_count": 0}
+        return {"vendor_count": 0, "txn_count": 0, "prefilled": 0}
+
+    prefills = prefills or {}
 
     groups = group_by_vendor(items)
 
+    # Build a mapping from each TaggedTransaction to its original review-queue
+    # index so we can look up prefills after vendor grouping reorders them.
+    # We use id() since the same TaggedTransaction object is in both lists.
+    item_to_qi: Dict[int, int] = {id(tt): qi for qi, tt in enumerate(items)}
+
+    # Compute per-vendor prefill consensus: if ALL transactions for a vendor
+    # share the same prefill category/property/expense_type, apply it to the
+    # vendor row too.
+    vendor_prefills: Dict[str, Dict[str, str]] = {}
+    for vendor_key, g in groups.items():
+        vendor_cats = set()
+        vendor_props = set()
+        vendor_exps = set()
+        has_prefill = False
+        for tt in g["transactions"]:
+            qi = item_to_qi.get(id(tt))
+            if qi is not None and qi in prefills:
+                pf = prefills[qi]
+                vendor_cats.add(pf.get("category", ""))
+                vendor_props.add(pf.get("property", ""))
+                vendor_exps.add(pf.get("expense_type", ""))
+                has_prefill = True
+        if has_prefill and len(vendor_cats) == 1 and len(vendor_props) == 1 and len(vendor_exps) == 1:
+            vendor_prefills[vendor_key] = {
+                "category": vendor_cats.pop(),
+                "property": vendor_props.pop(),
+                "expense_type": vendor_exps.pop(),
+            }
+
     # --- Vendors tab ---
     try:
-        vendor_ws = spreadsheet.worksheet("Vendors")
+        vendor_ws = spreadsheet.worksheet(vendor_tab_name)
         vendor_ws.clear()
     except Exception:
         vendor_ws = spreadsheet.add_worksheet(
-            title="Vendors", rows=len(groups) + 10, cols=len(VENDOR_HEADERS)
+            title=vendor_tab_name, rows=len(groups) + 10, cols=len(VENDOR_HEADERS)
         )
 
     vendor_rows: List[List[Any]] = [VENDOR_HEADERS]
     for vendor_key, g in groups.items():
+        vpf = vendor_prefills.get(vendor_key, {})
         vendor_rows.append([
             g["vendor"],
             g["count"],
@@ -111,9 +153,9 @@ def push_review_queue(
             g["sample_description"],
             float(g["sample_amount"]),
             ", ".join(sorted(g["accounts"])),
-            "",  # Category
-            "",  # Property
-            "",  # Expense Type
+            vpf.get("category", ""),
+            vpf.get("property", ""),
+            vpf.get("expense_type", ""),
             "",  # Notes
         ])
 
@@ -130,18 +172,23 @@ def push_review_queue(
 
     # --- Transactions tab ---
     try:
-        txn_ws = spreadsheet.worksheet("Transactions")
+        txn_ws = spreadsheet.worksheet(txn_tab_name)
         txn_ws.clear()
     except Exception:
         txn_ws = spreadsheet.add_worksheet(
-            title="Transactions", rows=len(items) + 10, cols=len(TXN_HEADERS)
+            title=txn_tab_name, rows=len(items) + 10, cols=len(TXN_HEADERS)
         )
 
     txn_rows: List[List[Any]] = [TXN_HEADERS]
+    prefilled_count = 0
     idx = 0
     for vendor_key, g in groups.items():
         for tt in sorted(g["transactions"], key=lambda t: t.transaction.date):
             txn = tt.transaction
+            qi = item_to_qi.get(id(tt))
+            pf = prefills.get(qi, {}) if qi is not None else {}
+            if pf.get("category") or pf.get("property") or pf.get("expense_type"):
+                prefilled_count += 1
             txn_rows.append([
                 _row_id(year, idx),
                 txn.date.isoformat(),
@@ -149,9 +196,9 @@ def push_review_queue(
                 txn.description,
                 float(txn.amount),
                 txn.account,
-                "",  # Category
-                "",  # Property
-                "",  # Expense Type
+                pf.get("category", ""),
+                pf.get("property", ""),
+                pf.get("expense_type", ""),
                 "",  # Notes
             ])
             idx += 1
@@ -172,4 +219,4 @@ def push_review_queue(
     except Exception:
         pass
 
-    return {"vendor_count": len(groups), "txn_count": len(items)}
+    return {"vendor_count": len(groups), "txn_count": len(items), "prefilled": prefilled_count}

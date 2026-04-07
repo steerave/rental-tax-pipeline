@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- Chase checking parser: handle FEES section (separate from Electronic Withdrawals) and check lines where OCR drops the check number. Fixes 4 statement parse failures for 2025 (March fees, May/June/September missing check numbers).
+- Margarete sheet reconciliation module (`taxauto.reconcile.margarete_sheet`): matches review-queue transactions against Margarete's 493-row expense worksheet by date + amount, then maps her property names and expense descriptions to pipeline dropdown values.
+- Review push pre-fill: `review push` now pre-populates Category, Property, and Expense Type columns from Margarete's matched data. Both transaction rows and vendor rows (when all transactions agree) are pre-filled.
+- Year-specific tab names for review Sheet (`Vendors 2025`, `Transactions 2025`) so multiple years can coexist on the same spreadsheet without overwriting.
 - 2025 LTR build support: Cash Flow parser now filters subtotal lines ("Total ...") to prevent double-counting, handles merged category names ("Lease Fee Utilities", "Rental License Utilities"), and maps new 2025 categories (Repair (IA) Turnover, Appliance Repair, Utility Costs Recovered, Deposit Forfeit, Application Fee).
 - "Owner packet" filename pattern recognition in the file classifier (e.g., "Owner packet - 11.pdf" now routes to Rent QC parser alongside existing "rentqc-" pattern).
 - Rent QC Cash Flow 12-Month summary parser for LTR pipeline: extracts pre-computed annual totals from Rent QC appendix pages instead of aggregating individual transactions. Captures "Major Repairs and Renovations" ($23K on 1015 39th St) and "Flooring" ($1,207 on 1210 College Ave) that were missing from the transaction-level approach. LTR build path now uses `cashflow_to_ltr_template` mapping in config.yaml.

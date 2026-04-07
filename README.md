@@ -22,7 +22,9 @@ This project automates everything except the irreducible judgment calls.
 - **Rent QC property-manager parser** — x-coordinate column binning to reliably extract 28 expense/income categories across 3 properties per report, with 6-invariant reconciliation per property per report.
 - **Rent QC Cash Flow 12-Month summary parser** — extracts pre-computed annual category totals from the appendix pages of Rent QC owner statements. These totals match the accountant's filed values much more closely than summing individual transactions, and capture "Major Repairs and Renovations" that were missing from transaction-level parsing.
 - **Vendor categorizer** — applies `vendor_mapping.yaml`; known vendors auto-tag, unknown or ambiguous vendors go to review. Automatically skips STR income deposits (Airbnb/Vrbo), LTR owner disbursements (Rent QC), Etsy payouts, and credit card payment entries from the review queue since these are already captured by dedicated data sources.
-- **Google Sheets review roundtrip** — pushes unknowns to a Sheet with dropdown validation, pulls tagged decisions back. Standalone formatting script applies dropdown validation (Category, Property, Expense Type), frozen/bold headers, column widths, currency formatting, editable-column highlighting, alternating row colors, and auto-filters.
+- **Chase checking FEES section** — parses bank service fees as a separate section (distinct from Electronic Withdrawals) and handles OCR-dropped check numbers with a fallback regex.
+- **Margarete sheet reconciliation** — matches review-queue transactions against a bookkeeper's manually-categorized expense worksheet by date + amount, then maps property names and expense descriptions to pipeline dropdown values. Pre-fills Category, Property, and Expense Type on both transaction and vendor rows in the review Sheet.
+- **Google Sheets review roundtrip** — pushes unknowns to a Sheet with dropdown validation, pulls tagged decisions back. Year-specific tab names (e.g. "Vendors 2025") allow multiple years to coexist. Standalone formatting script applies dropdown validation (Category, Property, Expense Type), frozen/bold headers, column widths, currency formatting, editable-column highlighting, alternating row colors, and auto-filters.
 - **Cross-year learning** — every human decision is written back to `vendor_mapping.yaml` with provenance. Ambiguous vendors (same vendor seen in multiple categories) are flagged forever and never auto-tagged.
 - **Prior-year bootstrap** — mines completed filed spreadsheets and Rent QC reports to pre-populate the vendor map (68 vendors learned from 2024 Rent QC data).
 - **Excel writers** — fill the accountant's existing P&L templates (`openpyxl`). STR writer uses hardcoded row positions; LTR writer dynamically scans column C per sheet to handle drifting layouts. All formula cells (totals, net income) are preserved.
@@ -110,6 +112,7 @@ rental-tax-pipeline/
 │   ├── categorize/          # mapper + learning
 │   ├── bootstrap/           # learn from prior-year filings
 │   ├── sheets/              # gspread push/pull
+│   ├── reconcile/           # cross-source matching (Margarete sheet)
 │   ├── writers/             # str + ltr Excel writers
 │   └── guards/              # reconcile, duplicates, double-count
 └── tests/
@@ -117,7 +120,7 @@ rental-tax-pipeline/
 
 ## Status
 
-**Phase 3 in progress** — live Google Sheets STR reader verified: 3/4 property revenues match filed totals exactly, Belden +$0.10 (rounding). 119 tests passing.
+**Phase 3 in progress** — 2025 extract + categorize complete. 12 checking (740 txns) + 12 CC (391 txns) parsed. 320 auto-tagged, 555 in review queue with 90 pre-filled from Margarete's worksheet. 153 tests passing.
 
 See `CHANGELOG.md` and `docs/status.md` for current progress.
 

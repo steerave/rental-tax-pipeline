@@ -80,7 +80,7 @@ def cmd_extract(cfg: Config, year: int) -> int:
         doc = extract_pdf(pdf)
         stmt = parse_chase_checking(doc.full_text, account_label=pdf.stem)
         reconcile_chase_checking(stmt)
-        all_txns = stmt.deposits + stmt.checks_paid + stmt.electronic_withdrawals
+        all_txns = stmt.deposits + stmt.checks_paid + stmt.electronic_withdrawals + stmt.fees
         all_checking_txns.extend(all_txns)
 
     _write_json(
@@ -207,7 +207,8 @@ def cmd_review_push(cfg: Config, year: int, client_factory=None) -> int:
         print("[review push] No review_queue.json found. Run 'categorize' first.", file=sys.stderr)
         return 2
 
-    queue = [S.dict_to_tagged(d) for d in _read_json(queue_path)]
+    queue_dicts = _read_json(queue_path)
+    queue = [S.dict_to_tagged(d) for d in queue_dicts]
     if not queue:
         print("[review push] Review queue is empty — nothing to push.")
         return 0
@@ -216,10 +217,30 @@ def cmd_review_push(cfg: Config, year: int, client_factory=None) -> int:
         print("[review push] GOOGLE_SERVICE_ACCOUNT_JSON not set", file=sys.stderr)
         return 2
 
+    sa_path = Path(cfg.google_service_account_json)
+
     if client_factory is None:
-        client = get_sheets_client(Path(cfg.google_service_account_json))
+        client = get_sheets_client(sa_path)
     else:
         client = client_factory()
+
+    # --- Margarete reconciliation (pre-fill from her expense worksheet) ---
+    prefills = {}
+    margarete_cfg = cfg.raw.get("margarete_sheet", {}) or {}
+    margarete_sheet_id = margarete_cfg.get("sheet_id", "14l3vIA_t5RVRTZBeGQeAU0HIkT5W33YXQkD5eXtfQQo")
+    margarete_tab = margarete_cfg.get("tab_name", f"{year} tax info")
+    if margarete_sheet_id and sa_path.exists():
+        try:
+            from taxauto.reconcile.margarete_sheet import (
+                load_margarete_sheet,
+                reconcile_against_margarete,
+            )
+            print(f"[review push] Loading Margarete's expense worksheet...")
+            marg_rows = load_margarete_sheet(sa_path, sheet_id=margarete_sheet_id, tab_name=margarete_tab)
+            prefills = reconcile_against_margarete(queue_dicts, marg_rows)
+            print(f"[review push] Matched {len(prefills)} of {len(queue)} review-queue items against Margarete's {len(marg_rows)} rows")
+        except Exception as ex:
+            print(f"[review push] Margarete reconciliation skipped: {ex}", file=sys.stderr)
 
     review_cfg = cfg.raw.get("review", {}) or {}
     editor_emails = review_cfg.get("editor_emails", [])
@@ -245,6 +266,10 @@ def cmd_review_push(cfg: Config, year: int, client_factory=None) -> int:
     all_properties = cfg.raw.get("all_properties", []) or []
     expense_types = cfg.raw.get("expense_types", []) or []
 
+    # Use year-specific tab names so 2024 and 2025 can coexist
+    vendor_tab = f"Vendors {year}"
+    txn_tab = f"Transactions {year}"
+
     result = push_review_queue(
         spreadsheet,
         tagged_transactions=queue,
@@ -252,13 +277,19 @@ def cmd_review_push(cfg: Config, year: int, client_factory=None) -> int:
         properties=all_properties,
         expense_types=expense_types,
         year=year,
+        prefills=prefills,
+        vendor_tab_name=vendor_tab,
+        txn_tab_name=txn_tab,
     )
 
     # Cache the Sheet ID for the pull step
     sheet_id_path = _cache_path(paths, "review_sheet_id.txt")
     sheet_id_path.write_text(spreadsheet.id, encoding="utf-8")
 
-    print(f"[review push] {result['vendor_count']} vendors, {result['txn_count']} transactions")
+    print(
+        f"[review push] {result['vendor_count']} vendors, {result['txn_count']} transactions, "
+        f"{result.get('prefilled', 0)} pre-filled from Margarete's worksheet"
+    )
     return 0
 
 

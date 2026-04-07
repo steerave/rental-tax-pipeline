@@ -1,4 +1,404 @@
 vendors:
+  01/10 online payment to green state credit union:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: ''
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: ''
+    source: review
+  01/17 online payment to engle plumbing:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Repairs and Maintenance
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: 27 Farmstead Dr
+    source: review
+  01/18 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 7
+    property: ''
+    source: review
+  01/23 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: 17 Oak Glen
+    source: review
+  01/25 online payment to first community bank of galena:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: ''
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: 15 Belden
+    source: review
+  01/31 online transfer to chk 9018 transaction#:
+    ambiguous: false
+    category: Personal
+    confidence: 0.9
+    expense_type: other
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: ''
+    source: review
+  02/04 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: 27 Farmstead Dr
+    source: review
+  02/05 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 17 Oak Glen
+    source: review
+  02/06 online payment to first community bank of galena:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: other
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: ''
+    source: review
+  02/06 online payment to protech heating & cooling:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Repairs and Maintenance
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: ''
+    source: review
+  02/06 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: 17 Oak Glen
+    source: review
+  02/18 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 27 Farmstead Dr
+    source: review
+  02/22 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 27 Farmstead Dr
+    source: review
+  02/26 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 17 Oak Glen
+    source: review
+  03/29 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 17 Oak Glen
+    source: review
+  04/17 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 17 Oak Glen
+    source: review
+  05/16 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 27 Farmstead Dr
+    source: review
+  05/20 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 17 Oak Glen
+    source: review
+  06/17 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 4
+    property: ''
+    source: review
+  06/27 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 17 Oak Glen
+    source: review
+  06/30 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 17 Oak Glen
+    source: review
+  07/02 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Repairs and Maintenance
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 27 Farmstead Dr
+    source: review
+  07/07 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 27 Farmstead Dr
+    source: review
+  07/12 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 27 Farmstead Dr
+    source: review
+  07/19 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 4
+    property: ''
+    source: review
+  07/20 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 27 Farmstead Dr
+    source: review
+  07/23 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 27 Farmstead Dr
+    source: review
+  08/16 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 27 Farmstead Dr
+    source: review
+  08/26 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Repairs and Maintenance
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 17 Oak Glen
+    source: review
+  08/29 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 27 Farmstead Dr
+    source: review
+  09/03 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 17 Oak Glen
+    source: review
+  09/08 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Repairs and Maintenance
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 17 Oak Glen
+    source: review
+  09/13 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 17 Oak Glen
+    source: review
+  09/30 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 17 Oak Glen
+    source: review
+  10/23 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 17 Oak Glen
+    source: review
+  11/29 online payment to first community bank of galena:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: HOA
+    learned_from:
+    - 2024
+    occurrences: 4
+    property: ''
+    source: review
+  12/16 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 17 Oak Glen
+    source: review
+  12/24 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Repairs and Maintenance
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 27 Farmstead Dr
+    source: review
+  12/30 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: 27 Farmstead Dr
+    source: review
+  12/31 online payment to territory & canyon:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 17 Oak Glen
+    source: review
   all drain:
     ambiguous: false
     category: Plumbing
@@ -23,6 +423,26 @@ vendors:
     - 2024
     occurrences: 5
     source: rentqc_bootstrap
+  amazon mktpl amzncom/bill wa:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Supplies
+    learned_from:
+    - 2024
+    occurrences: 5
+    property: ''
+    source: review
+  amzn mktp us amzncom/bill wa:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Supplies
+    learned_from:
+    - 2024
+    occurrences: 12
+    property: ''
+    source: review
   andrea n dinkins- andrews:
     ambiguous: true
     category: Rent Income
@@ -151,6 +571,16 @@ vendors:
     - 2024
     occurrences: 1
     source: rentqc_bootstrap
+  check:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: ''
+    learned_from:
+    - 2024
+    occurrences: 54
+    property: ''
+    source: review
   chimney falcon's nest sweeps:
     ambiguous: false
     category: Repair (IA)
@@ -175,6 +605,26 @@ vendors:
     - 2024
     occurrences: 3
     source: rentqc_bootstrap
+  costco gas davenport ia:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Travel
+    learned_from:
+    - 2024
+    occurrences: 4
+    property: ''
+    source: review
+  costco whse davenport ia:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Utilities
+    learned_from:
+    - 2024
+    occurrences: 12
+    property: ''
+    source: review
   dalantae:
     ambiguous: false
     category: Rent Income
@@ -207,6 +657,16 @@ vendors:
     - 2024
     occurrences: 5
     source: rentqc_bootstrap
+  discount tire iaq davenport ia:
+    ambiguous: false
+    category: Personal
+    confidence: 0.9
+    expense_type: Travel
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: ''
+    source: review
   dustin m francis:
     ambiguous: true
     category: Rent Income
@@ -215,6 +675,16 @@ vendors:
     - 2024
     occurrences: 39
     source: rentqc_bootstrap
+  eagle ridge country st-7765400 il:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Travel
+    learned_from:
+    - 2024
+    occurrences: 16
+    property: ''
+    source: review
   east moline glass:
     ambiguous: false
     category: Repair (IA)
@@ -231,6 +701,36 @@ vendors:
     - 2024
     occurrences: 2
     source: rentqc_bootstrap
+  exxon-eleven dekalb il:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Travel
+    learned_from:
+    - 2024
+    occurrences: 3
+    property: ''
+    source: review
+  fbs inc-2703592 il:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Utilities
+    learned_from:
+    - 2024
+    occurrences: 3
+    property: ''
+    source: review
+  fbs utilities inc-2703592 il:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Utilities
+    learned_from:
+    - 2024
+    occurrences: 9
+    property: ''
+    source: review
   gamgee:
     ambiguous: false
     category: Owner Distributions / S corp Distributions
@@ -255,6 +755,36 @@ vendors:
     - 2024
     occurrences: 5
     source: rentqc_bootstrap
+  hy-vee bettendorf bettendorf ia:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Supplies
+    learned_from:
+    - 2024
+    occurrences: 9
+    property: ''
+    source: review
+  hy-vee bttndrf f&f bettendorf ia:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Supplies
+    learned_from:
+    - 2024
+    occurrences: 24
+    property: ''
+    source: review
+  hy-vee f&f dubuque dubuque ia:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Supplies
+    learned_from:
+    - 2024
+    occurrences: 4
+    property: ''
+    source: review
   iowa american water:
     ambiguous: false
     category: Water
@@ -303,6 +833,16 @@ vendors:
     - 2024
     occurrences: 13
     source: rentqc_bootstrap
+  late fee:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Bank Charges
+    learned_from:
+    - 2024
+    occurrences: 4
+    property: ''
+    source: review
   laundry:
     ambiguous: false
     category: Laundry Income
@@ -343,6 +883,46 @@ vendors:
     - 2024
     occurrences: 1
     source: rentqc_bootstrap
+  mcdonald's f7787 galena il:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Travel
+    learned_from:
+    - 2024
+    occurrences: 3
+    property: ''
+    source: review
+  mdc carroll energy-8582207 il:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Utilities
+    learned_from:
+    - 2024
+    occurrences: 13
+    property: ''
+    source: review
+  mediacom bro-290-5400 ny:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Utilities
+    learned_from:
+    - 2024
+    occurrences: 24
+    property: ''
+    source: review
+  mediacom bro-633-4226 ny:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Commissions/Service Fees
+    learned_from:
+    - 2024
+    occurrences: 28
+    property: ''
+    source: review
   meyer pest control:
     ambiguous: false
     category: Pest Control
@@ -351,6 +931,16 @@ vendors:
     - 2024
     occurrences: 1
     source: rentqc_bootstrap
+  michaels stores davenport ia:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Supplies
+    learned_from:
+    - 2024
+    occurrences: 4
+    property: ''
+    source: review
   midamerican:
     ambiguous: false
     category: Electricity & Gas
@@ -383,6 +973,16 @@ vendors:
     - 2024
     occurrences: 2
     source: rentqc_bootstrap
+  mister car wash davenport ia:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Travel
+    learned_from:
+    - 2024
+    occurrences: 4
+    property: ''
+    source: review
   nikole shirilla:
     ambiguous: false
     category: Rent Income
@@ -391,6 +991,250 @@ vendors:
     - 2024
     occurrences: 13
     source: rentqc_bootstrap
+  online payment to territory & canyon account number:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: 17 Oak Glen
+    source: review
+  ? orig co nameauto-owners orig id1380315280 desc datefeb co entry descrins prem
+    secppd trace#072000919675129 eed240205 ind id ind namesarun teeravechyan trn 0369675129tc
+  : ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Insurance
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: ''
+    source: review
+  ? orig co nameauto-owners orig id1380315280 desc datejan co entry descrins prem
+    secppd trace#072000914151468 eed240104 ind id ind namesarun teeravechyan trn 0044151468tc
+  : ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Insurance
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: ''
+    source: review
+  ? orig co namegreensky orig id2274797123 desc date240122 co entry descrweb pay secccd
+    trace#242071752869976 eed240123 ind idgreensky ind namesarun teeravechyan trn
+    0232869976tc
+  : ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Commissions/Service Fees
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: ''
+    source: review
+  ? orig co namegreenstate cu orig id3273975098 desc datejan co entry descrach orig
+    secppd trace#273975092882566 eed240122 ind id ind nameteeravechyansar trn 0222882566tc
+  : ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Travel
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: ''
+    source: review
+  ? orig co namegta inc orig id1363154255 desc date co entry descreagrdtwnhmsecppd
+    trace#071122243561649 eed240110 ind id ind namesarun teeravechyan trn 0103561649tc
+  : ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: HOA
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: 27 Farmstead Dr
+    source: review
+  ? orig co namegta inc orig id1363458327 desc date co entry descrsprngcreeksecppd
+    trace#071122243561682 eed240110 ind id ind namesarun teeravechyan trn 0103561682tc
+  : ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: HOA
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: 20 Valleywood Ln
+    source: review
+  ? orig co namegta inc orig id1363458327 desc date co entry descrsprngcreeksecppd
+    trace#071122243561684 eed240110 ind id ind namesarun teeravechyan trn 0103561684tc
+  : ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: HOA
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: 17 Oak Glen
+    source: review
+  ? orig co namepnc mtg payment orig idpnc off us desc date co entry descronline pmtsecweb
+    trace#041000120369075 eed240116 ind id1500100775 ind namesarun teeravechyan trn
+    0160369075tc
+  : ambiguous: false
+    category: LTR
+    confidence: 0.9
+    expense_type: ''
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: ''
+    source: review
+  ? orig co namevenmo orig id3264681992 desc date231231 co entry descrpayment secweb
+    trace#091000012927398 eed240102 ind id1031633163696 ind namesarun teeravechyan
+    trn 0022927398tc
+  : ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: 15 Belden
+    source: review
+  ? orig co namevenmo orig id3264681992 desc date240102 co entry descrpayment secweb
+    trace#091000018834174 eed240103 ind id1031681284892 ind namesarun teeravechyan
+    trn 0038834174tc
+  : ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Utilities
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: 20 Valleywood Ln
+    source: review
+  ? orig co namevenmo orig id3264681992 desc date240103 co entry descrpayment secweb
+    trace#091000011929419 eed240104 ind id1031697641703 ind namesarun teeravechyan
+    trn 0041929419tc
+  : ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Utilities
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: 20 Valleywood Ln
+    source: review
+  ? orig co namevenmo orig id3264681992 desc date240105 co entry descrpayment secweb
+    trace#091000015026769 eed240108 ind id1031742556956 ind namesarun teeravechyan
+    trn 0085026769tc
+  : ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: ''
+    source: review
+  ? orig co namevenmo orig id3264681992 desc date240111 co entry descrpayment secweb
+    trace#091000015162138 eed240112 ind id1031861024416 ind namesarun teeravechyan
+    trn 0125162138tc
+  : ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: ''
+    source: review
+  ? orig co namevenmo orig id3264681992 desc date240122 co entry descrpayment secweb
+    trace#091000012845065 eed240123 ind id1032066966005 ind namesarun teeravechyan
+    trn 0232845065tc
+  : ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: 15 Belden
+    source: review
+  ? orig co namevenmo orig id3264681992 desc date240122 co entry descrpayment secweb
+    trace#091000013028575 eed240123 ind id1032075239330 ind namesarun teeravechyan
+    trn 0233028575tc
+  : ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: 20 Valleywood Ln
+    source: review
+  ? orig co namevenmo orig id3264681992 desc date240130 co entry descrpayment secweb
+    trace#091000014274686 eed240131 ind id1032229412731 ind namesarun teeravechyan
+    trn 0314274686tc
+  : ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: 20 Valleywood Ln
+    source: review
+  ? orig co namevenmo orig id3264681992 desc date240130 co entry descrpayment secweb
+    trace#091000014630403 eed240131 ind id1032214608306 ind namesarun teeravechyan
+    trn 0314630403tc
+  : ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Cleaning Fees
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: 15 Belden
+    source: review
+  ? orig co namewater service orig id9427726001 desc date240103 co entry descrcons
+    coll secppd trace#021000026970155 eed240103 ind id ind namesarun teeravechyan
+    trn 0036970155tc
+  : ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Utilities
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: ''
+    source: review
+  ? orig co namewater service orig id9427726001 desc date240103 co entry descrcons
+    coll secppd trace#021000026970165 eed240103 ind id ind namesarun teeravechyan
+    trn 0036970165tc
+  : ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Utilities
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: ''
+    source: review
+  ? orig co namewater service orig id9427726001 desc date240109 co entry descrcons
+    coll secppd trace#021000029979933 eed240109 ind id ind namemargarete claudy trn
+    0099979933tc
+  : ambiguous: false
+    category: Personal
+    confidence: 0.9
+    expense_type: Utilities
+    learned_from:
+    - 2024
+    occurrences: 1
+    property: ''
+    source: review
   paul a hassig:
     ambiguous: true
     category: Rent Income
@@ -399,6 +1243,26 @@ vendors:
     - 2024
     occurrences: 6
     source: rentqc_bootstrap
+  paypal inc-367-9444 pa:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Supplies
+    learned_from:
+    - 2024
+    occurrences: 3
+    property: ''
+    source: review
+  printifycom printifycom de:
+    ambiguous: false
+    category: Personal
+    confidence: 0.9
+    expense_type: Advertising
+    learned_from:
+    - 2024
+    occurrences: 3
+    property: ''
+    source: review
   qc mow and inc:
     ambiguous: false
     category: Lawn and Snow Care
@@ -503,6 +1367,56 @@ vendors:
     - 2024
     occurrences: 2
     source: rentqc_bootstrap
+  shell oil bettendorf ia:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Travel
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: ''
+    source: review
+  soi thai noodle shop davenport ia:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Travel
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: ''
+    source: review
+  sq depot coffee galena il:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Travel
+    learned_from:
+    - 2024
+    occurrences: 6
+    property: ''
+    source: review
+  sq garage door compan riverdale ia:
+    ambiguous: false
+    category: Personal
+    confidence: 0.9
+    expense_type: ''
+    learned_from:
+    - 2024
+    occurrences: 2
+    property: ''
+    source: review
+  sullivan's home & h savanna il:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Supplies
+    learned_from:
+    - 2024
+    occurrences: 3
+    property: ''
+    source: review
   sylvia m mcclure:
     ambiguous: true
     category: Rent Income
@@ -527,6 +1441,16 @@ vendors:
     - 2024
     occurrences: 23
     source: rentqc_bootstrap
+  the home depot bettendorf ia:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Supplies
+    learned_from:
+    - 2024
+    occurrences: 13
+    property: ''
+    source: review
   the salvation army gpd-tip:
     ambiguous: true
     category: Prepaid Rent
@@ -543,3 +1467,53 @@ vendors:
     - 2024
     occurrences: 1
     source: rentqc_bootstrap
+  usps po bettendorf ia:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Postages
+    learned_from:
+    - 2024
+    occurrences: 4
+    property: ''
+    source: review
+  utilities inc service fee-2703592 il:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Utilities
+    learned_from:
+    - 2024
+    occurrences: 10
+    property: ''
+    source: review
+  wal-mart galena il:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Supplies
+    learned_from:
+    - 2024
+    occurrences: 3
+    property: ''
+    source: review
+  wm supercenter davenport ia:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: Supplies
+    learned_from:
+    - 2024
+    occurrences: 3
+    property: ''
+    source: review
+  wwwzenbusinesscom httpswwwzenb tx:
+    ambiguous: false
+    category: STR
+    confidence: 0.9
+    expense_type: legal expenses
+    learned_from:
+    - 2024
+    occurrences: 3
+    property: ''
+    source: review

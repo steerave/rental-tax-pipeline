@@ -23,6 +23,7 @@ def reconcile_chase_checking(statement: ChaseCheckingStatement) -> None:
         ("deposits", "deposits"),
         ("checks_paid", "checks_paid"),
         ("electronic_withdrawals", "electronic_withdrawals"),
+        ("fees", "fees"),
     ]:
         expected = counts.get(section)
         actual = len(getattr(statement, field))
@@ -33,7 +34,8 @@ def reconcile_chase_checking(statement: ChaseCheckingStatement) -> None:
 
     # Balance formula
     if statement.beginning_balance is not None and statement.ending_balance is not None:
-        all_txns = statement.deposits + statement.checks_paid + statement.electronic_withdrawals
+        all_txns = (statement.deposits + statement.checks_paid
+                    + statement.electronic_withdrawals + statement.fees)
         total = sum((t.amount for t in all_txns), Decimal("0"))
         expected_delta = statement.ending_balance - statement.beginning_balance
         if abs(total - expected_delta) > _TOL:

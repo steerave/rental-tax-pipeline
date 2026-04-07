@@ -12,6 +12,9 @@ def pull_review_decisions(
 ) -> Dict[str, Any]:
     """Read the Vendors and Transactions tabs and return structured decisions.
 
+    Tries year-specific tab names first (e.g. "Vendors 2025"), then falls
+    back to legacy names ("Vendors") for backward compatibility.
+
     Returns:
         {
             "vendor_decisions": {vendor_key: {category, property, expense_type, count, year}},
@@ -19,8 +22,11 @@ def pull_review_decisions(
             "year": year,
         }
     """
-    # Read Vendors tab
-    vendor_ws = spreadsheet.worksheet("Vendors")
+    # Read Vendors tab — try year-specific name first
+    try:
+        vendor_ws = spreadsheet.worksheet(f"Vendors {year}")
+    except Exception:
+        vendor_ws = spreadsheet.worksheet("Vendors")
     vendor_rows = vendor_ws.get_all_records()
 
     vendor_decisions: Dict[str, Dict[str, Any]] = {}
@@ -37,10 +43,13 @@ def pull_review_decisions(
             "year": year,
         }
 
-    # Read Transactions tab for overrides
+    # Read Transactions tab for overrides — try year-specific name first
     transaction_overrides: Dict[str, Dict[str, Any]] = {}
     try:
-        txn_ws = spreadsheet.worksheet("Transactions")
+        try:
+            txn_ws = spreadsheet.worksheet(f"Transactions {year}")
+        except Exception:
+            txn_ws = spreadsheet.worksheet("Transactions")
         txn_rows = txn_ws.get_all_records()
         for row in txn_rows:
             row_id = str(row.get("Row ID", "")).strip()
