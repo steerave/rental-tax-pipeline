@@ -21,6 +21,12 @@ def test_classify_rentqc_report() -> None:
     assert classify_file(Path("rentqc-12 decjan2.pdf")) == DocType.RENT_QC
 
 
+def test_classify_owner_packet() -> None:
+    assert classify_file(Path("Owner packet - 11.pdf")) == DocType.RENT_QC
+    assert classify_file(Path("owner packet - 03.pdf")) == DocType.RENT_QC
+    assert classify_file(Path("OwnerPacket-2025.pdf")) == DocType.RENT_QC
+
+
 def test_classify_unknown_file() -> None:
     assert classify_file(Path("random-document.pdf")) == DocType.UNKNOWN
     assert classify_file(Path("readme.txt")) == DocType.UNKNOWN

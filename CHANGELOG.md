@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- 2025 LTR build support: Cash Flow parser now filters subtotal lines ("Total ...") to prevent double-counting, handles merged category names ("Lease Fee Utilities", "Rental License Utilities"), and maps new 2025 categories (Repair (IA) Turnover, Appliance Repair, Utility Costs Recovered, Deposit Forfeit, Application Fee).
+- "Owner packet" filename pattern recognition in the file classifier (e.g., "Owner packet - 11.pdf" now routes to Rent QC parser alongside existing "rentqc-" pattern).
 - Rent QC Cash Flow 12-Month summary parser for LTR pipeline: extracts pre-computed annual totals from Rent QC appendix pages instead of aggregating individual transactions. Captures "Major Repairs and Renovations" ($23K on 1015 39th St) and "Flooring" ($1,207 on 1210 College Ave) that were missing from the transaction-level approach. LTR build path now uses `cashflow_to_ltr_template` mapping in config.yaml.
 - Auto-skip income deposits and CC payments from review queue: Airbnb/Vrbo deposits (STR income), Rent QC deposits (LTR owner disbursements), Etsy payouts, and "Payment Thank You" credit card entries are now automatically excluded from categorization since they are already captured by dedicated data sources. Reduces review queue from 1410 to 1085 transactions and from 878 to 574 vendors.
 - "STR - Split" and "LTR - Split" category options: tagging a vendor with these Category values in the review Sheet divides the expense evenly across all 4 STR or all 3 LTR properties respectively. Property column left blank. (Replaces former "Split - All STR"/"Split - All LTR" property values.)

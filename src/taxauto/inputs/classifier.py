@@ -26,6 +26,7 @@ _PATTERNS = [
     (re.compile(r"statements-7552", re.IGNORECASE), DocType.CHASE_CHECKING),
     (re.compile(r"statements-1091", re.IGNORECASE), DocType.CHASE_CREDIT),
     (re.compile(r"^rentqc-", re.IGNORECASE), DocType.RENT_QC),
+    (re.compile(r"owner\s*packet", re.IGNORECASE), DocType.RENT_QC),
 ]
 
 

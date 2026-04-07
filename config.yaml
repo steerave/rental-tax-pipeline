@@ -119,6 +119,17 @@ cashflow_to_ltr_template:
   "Legal Expenses": "legal expenses"
   "Maintenance Labor": "Repairs and Maintenance"
 
+  # 2025 new categories
+  "Repair (IA) Turnover": "Repairs and Maintenance"
+  "Appliance Repair": "Appliances"
+  "Utility Costs Recovered": "Other revenue"
+  "Deposit Forfeit": "Other revenue"
+  "Application Fee": null
+
+  # 2025 merged category workarounds (pdfplumber concatenation artifacts)
+  "Lease Fee Utilities": "Licenses and Fees"
+  "Rental License Utilities": "Licenses and Fees"
+
   # Other Items — exclude from template
   "Owner Distributions / S corp Distributions": null
   "Prepaid Rent": null

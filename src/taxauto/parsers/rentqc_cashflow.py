@@ -192,6 +192,13 @@ def _parse_cashflow_pages(page_texts: list[str]) -> CashFlowSummary:
                 last_cat_key = None
                 continue
 
+            # Skip subtotal lines (e.g., "Total Repairs Cleaning",
+            # "Total Utilities") to avoid double-counting with the
+            # individual line items above them.
+            if cat_name.lower().startswith("total "):
+                last_cat_key = None
+                continue
+
             total = Decimal(amounts[-1].replace(",", ""))
 
             if section == "income":

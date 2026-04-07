@@ -16,7 +16,7 @@ This project automates everything except the irreducible judgment calls.
 
 ## Features
 
-- **PDF ingestion** — auto-detects text vs. scanned PDFs; routes text PDFs through `pdfplumber` and scanned PDFs through Tesseract OCR. Input file classifier auto-routes Chase checking, Chase credit card, and Rent QC PDFs by filename pattern.
+- **PDF ingestion** — auto-detects text vs. scanned PDFs; routes text PDFs through `pdfplumber` and scanned PDFs through Tesseract OCR. Input file classifier auto-routes Chase checking, Chase credit card, and Rent QC PDFs by filename pattern (supports both `rentqc-*` and `Owner packet` naming conventions).
 - **Chase Business Checking parser** — handles multi-line ACH description blocks, instance-count reconciliation, and Chase-specific `*start*`/`*end*` pdfplumber anchor artifacts.
 - **Chase Ink credit card parser** — dual-cardholder state machine (cards 1091 + 1109) extracting transactions from interleaved per-card sections across 13 monthly statements.
 - **Rent QC property-manager parser** — x-coordinate column binning to reliably extract 28 expense/income categories across 3 properties per report, with 6-invariant reconciliation per property per report.
