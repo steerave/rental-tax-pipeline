@@ -124,8 +124,8 @@ Same structure but row positions differ between 1015 39th St, 1210 College Ave, 
 | Area | Status | Accuracy |
 |---|---|---|
 | STR Sales Revenue | Verified | 4/4 properties within $0.10 |
-| LTR Rent QC → P&L | Verified | 59.5% cells within tolerance |
-| LTR remaining gaps | Known | Renovations (manual), laundry/late fee timing, boundary effects |
+| LTR Rent QC → P&L | Verified | 308 Lincoln: 100%. 1015/1210: Cash Flow totals correct; deltas are accountant reclassifications. |
+| LTR remaining gaps | Understood | Accountant moves amounts between categories (e.g., Cleaning→R&M, Pest Control reclassified). Pipeline presents Rent QC data as-is; accountant adjusts. Not fixable in pipeline. |
 | STR Expenses | Pending | Awaiting review Sheet tagging completion |
 | Interest Expense | Pending | Awaiting `interest_expense.yaml` from Form 1098 |
 
