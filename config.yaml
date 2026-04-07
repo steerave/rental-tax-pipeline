@@ -84,9 +84,54 @@ rentqc_to_ltr_template:
   # Internal — exclude
   "Owner Distributions / S corp Distributions": null
 
+# Cash Flow 12-Month category -> LTR template row mapping.
+# These are the category names as they appear in the Cash Flow summary,
+# which sometimes differ from the transaction-level names.
+cashflow_to_ltr_template:
+  # Income
+  "Rent Income": "Sales revenue"
+  "Laundry Income": "Laundry revenue"
+  "Late Fee": "late fees revenue"
+  "Notice Fee": null  # negligible
+
+  # Expenses (same as rentqc_to_ltr_template where names match)
+  "Cleaning (IA)": "Cleaning Fees"
+  "Cleaning (IL)": "Cleaning Fees"
+  "Repair (IA)": "Repairs and Maintenance"
+  "Repair (IL)": "Repairs and Maintenance"
+  "Carpet Cleaning": "Cleaning Fees"
+  "HVAC (Heat, Ventilation, Air)": "Appliances"
+  "Lawn and Snow Care": "Lawn and Snow Care"
+  "Management Fees": "Management Fees"
+  "Lease Fee": "Licenses and Fees"
+  "Rental License": "Licenses and Fees"
+  "Electricity & Gas": "Utilities"
+  "Water": "Utilities"
+  "Sewer": "Utilities"
+  "Garbage and Recycling": "Utilities"
+  "Pest Control": "Pest Control"
+  "Plumbing": "Plumbing"
+  "Major Repairs and Renovations": "Renovations"
+  "Flooring": "Renovations"
+  "Supply and Materials": "Supplies"
+  "Stock Materials": "Supplies"
+  "Postage": "Postages"
+  "Legal Expenses": "legal expenses"
+  "Maintenance Labor": "Repairs and Maintenance"
+
+  # Other Items — exclude from template
+  "Owner Distributions / S corp Distributions": null
+  "Prepaid Rent": null
+  "Additional Paid In Capital": null
+  "Owner Held Security Deposit": null
+
 # Maps Rent QC property names to template sheet names when they don't match exactly.
+# Includes both transaction-level names and Cash Flow summary names.
 property_aliases:
   "308 S Lincoln Ave": "308 Lincoln Ave"
+  "1015 39th St. Bettendorf, IA 52722": "1015 39th St"
+  "1210/1212 College Ave Davenport, IA 52803": "1210 College Ave"
+  "308 S Lincoln Ave Davenport, IA 52802": "308 Lincoln Ave"
 
 # STR Google Sheets — one per property, each with a per-year tab.
 # Tab naming: '{YY} earnings or {YYYY} earnings

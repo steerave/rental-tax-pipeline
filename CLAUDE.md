@@ -117,6 +117,7 @@ Same structure but row positions differ between 1015 39th St, 1210 College Ave, 
 5. **Chase text pre-cleaner** must strip `*start*`/`*end*` anchors before any parsing. These are invisible PDF glyphs that pdfplumber splices into data lines.
 6. **Credit card parser** has a cardholder state machine. Default `current_card = "1091"`, flips on `TRANSACTIONS THIS CYCLE (CARD xxxx)` subtotal lines.
 7. **Writer copies 2024 workbooks as templates** (clears value cells, preserves formulas). Never writes to total/formula cells.
+8. **LTR uses Cash Flow 12-Month summaries**, not individual transaction aggregation. The Rent QC appendix pages have pre-computed annual totals that match the accountant's filed values much more closely. The `cashflow_to_ltr_template` mapping in config.yaml maps these summary categories to template rows. This also captures "Major Repairs and Renovations" which was missing from the transaction-level approach.
 
 ## Verification status (2024)
 

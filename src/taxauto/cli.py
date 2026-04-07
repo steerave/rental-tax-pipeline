@@ -382,7 +382,6 @@ def cmd_review_pull(cfg: Config, year: int, client_factory=None) -> int:
 def cmd_build(cfg: Config, year: int) -> int:
     """Aggregate all sources and write STR + LTR workbooks."""
     from taxauto.aggregate.by_property import aggregate_by_property
-    from taxauto.aggregate.rentqc_to_template import get_rentqc_mapping, map_rentqc_category
     from taxauto.guards.double_count import detect_double_counts
     from taxauto.sources.interest_expense import load_interest_expense
     from taxauto.sources.str_sheets import (
@@ -448,16 +447,10 @@ def cmd_build(cfg: Config, year: int) -> int:
     interest_path = cfg.project_root / "interest_expense.yaml"
     interest_by_property = load_interest_expense(interest_path, year=year)
 
-    # Rent QC category mapping
-    rentqc_mapping = get_rentqc_mapping(cfg)
-
     # Load property aliases from config
     property_aliases = cfg.raw.get("property_aliases", {}) or {}
 
-    # Flatten all Rent QC transactions, filtering by report period and
-    # normalizing property names via aliases.
-    # Include reports whose period_start.year == tax year, then from those
-    # reports only include transactions whose date.year == tax year.
+    # Flatten all Rent QC transactions for double-count guard
     all_rentqc_txns = []
     for report in rentqc_reports:
         if report.period_start and report.period_start.year != year:
@@ -482,23 +475,58 @@ def cmd_build(cfg: Config, year: int) -> int:
     if double_counts:
         print(f"[build] {len(double_counts)} eCheck double-count(s) excluded")
 
-    # --- Build LTR totals ---
+    # --- Build LTR totals from Cash Flow 12-Month summaries ---
+    from taxauto.parsers.rentqc_cashflow import parse_cashflow_summaries
+
+    cashflow_mapping = cfg.raw.get("cashflow_to_ltr_template", {}) or {}
+
     ltr_items = []
 
-    # a) Rent QC transactions -> template categories
-    for prop_name, txn in all_rentqc_txns:
-        if not txn.category:
-            continue
-        template_cat = map_rentqc_category(txn.category, rentqc_mapping)
-        if template_cat is None:
-            continue
-        # Use cash_in (positive) or cash_out (negative) as amount
-        amount = txn.cash_in if txn.cash_in else (txn.cash_out if txn.cash_out else Decimal("0"))
-        ltr_items.append({
-            "property": prop_name,
-            "template_category": template_cat,
-            "amount": amount,
-        })
+    # Find Cash Flow summaries from all Rent QC PDFs for this year
+    from taxauto.inputs.classifier import DocType, classify_directory
+    inputs = _inputs_dir(cfg, year)
+    groups = classify_directory(inputs)
+
+    # Only use the Cash Flow summary whose period is exactly Jan-Dec of the tax year
+    # (e.g., "Jan 2024 to Dec 2024"). Other PDFs have rolling 12-month windows
+    # that span two calendar years.
+    expected_period = f"Jan {year} to Dec {year}"
+    cashflow_summaries = []
+    for pdf in groups.get(DocType.RENT_QC, []):
+        summaries = parse_cashflow_summaries(pdf)
+        for s in summaries:
+            if (s.period or "") == expected_period:
+                cashflow_summaries.append(s)
+
+    if not cashflow_summaries:
+        print(f"[build] WARNING: No Cash Flow 12-Month summaries found for {year}")
+
+    for summary in cashflow_summaries:
+        prop_name = property_aliases.get(summary.property_name, summary.property_name)
+
+        # Income items
+        for category, amount in summary.income.items():
+            template_cat = cashflow_mapping.get(category)
+            if template_cat is None:
+                continue
+            ltr_items.append({
+                "property": prop_name,
+                "template_category": template_cat,
+                "amount": amount,  # positive for income
+            })
+
+        # Expense items
+        for category, amount in summary.expenses.items():
+            template_cat = cashflow_mapping.get(category)
+            if template_cat is None:
+                continue
+            ltr_items.append({
+                "property": prop_name,
+                "template_category": template_cat,
+                "amount": -amount,  # negative for expenses (aggregator flips)
+            })
+
+    print(f"[build] {len(cashflow_summaries)} Cash Flow summaries loaded")
 
     # b) Interest expense per property (for LTR properties)
     for prop_name, interest in interest_by_property.items():
@@ -613,8 +641,9 @@ def cmd_build(cfg: Config, year: int) -> int:
     else:
         print(f"[build] LTR template not found: {ltr_template}", file=sys.stderr)
 
-    # Append transactions tabs
-    # Build per-property transaction detail dicts for audit trail
+    # Append transactions tabs (audit trail using transaction-level data)
+    from taxauto.aggregate.rentqc_to_template import get_rentqc_mapping, map_rentqc_category
+    rentqc_mapping = get_rentqc_mapping(cfg)
     ltr_detail = {}  # property -> [txn dicts]
     for prop_name, txn in all_rentqc_txns:
         if not txn.category:
