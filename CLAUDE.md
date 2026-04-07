@@ -89,6 +89,7 @@ URL: https://docs.google.com/spreadsheets/d/1l3pXIxVcb4NVjQO-oemSbnkkjU8JuJZF9Nz
 | Airbnb/Vrbo bank deposits | **Auto-skipped** — STR revenue comes from Google Sheets, not bank. |
 | Rent QC bank deposits | **Auto-skipped** — LTR income comes from Rent QC parser. |
 | Etsy payouts | **Auto-skipped** — not rental income. |
+| Etsy business expenses (Printify, Midjourney, eRank, Shopify, etc.) | Category=**Skip**. Etsy business is handled outside this pipeline. |
 | Mortgage payments | Category=**Skip**. Interest is handled via `interest_expense.yaml`. |
 | Owner transfers between accounts | Category=**Skip**. |
 
