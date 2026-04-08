@@ -96,6 +96,56 @@ cp .env.template .env
 
 Drop the accountant's blank templates into `templates/` and prior-year documents into `years/YYYY/inputs/` and `years/YYYY/outputs/`.
 
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                          INPUT SOURCES                          │
+├───────────────┬───────────────┬──────────────┬─────────────────┤
+│ Chase Bank    │ Chase Credit  │ Rent QC      │ STR Google      │
+│ Statements    │ Card PDFs     │ Owner PDFs   │ Sheets (×4)     │
+│ (12 PDFs/yr)  │ (13 PDFs/yr)  │ (13 PDFs/yr) │ earnings tabs   │
+└───────┬───────┴───────┬───────┴──────┬───────┴────────┬────────┘
+        │               │              │                │
+        └───────────────┴──────────────┘                │
+                        │  text / OCR                   │ gspread
+               ┌────────▼────────┐                      │
+               │    EXTRACT      │                      │
+               │ pdfplumber +    │                      │
+               │ Tesseract OCR   │                      │
+               └────────┬────────┘                      │
+                        │ normalized transactions        │
+               ┌────────▼────────┐                      │
+               │   CATEGORIZE    │                      │
+               │ vendor_mapping  │◄─────────────────────┘
+               │ auto-tag known  │   (STR revenue resolved here)
+               └────┬───────┬────┘
+                    │       │
+              known │       │ unknown / ambiguous
+                    │  ┌────▼────────────┐
+                    │  │     REVIEW      │  ← Margarete's
+                    │  │  Google Sheets  │    bookkeeper sheet
+                    │  │  push / pull    │    pre-fills rows
+                    │  │  cross-year     │
+                    │  │  learning       │
+                    │  └────┬────────────┘
+                    │       │ human decisions written back
+                    └───────┤   to vendor_mapping.yaml
+                            │
+               ┌────────────▼────────┐
+               │       BUILD         │
+               │ aggregate by prop.  │
+               │ fill Excel templates│
+               │ (STR + LTR P&L)     │
+               └────────────┬────────┘
+                            │
+               ┌────────────▼────────┐
+               │       VERIFY        │
+               │ cell-by-cell diff   │
+               │ vs. filed workbooks │
+               └─────────────────────┘
+```
+
 ## Project layout
 
 ```
@@ -120,7 +170,7 @@ rental-tax-pipeline/
 
 ## Status
 
-**Phase 3 in progress** — 2025 extract + categorize complete. 12 checking (740 txns) + 12 CC (391 txns) parsed. 320 auto-tagged, 555 in review queue with 90 pre-filled from Margarete's worksheet. 153 tests passing.
+Pipeline is complete and running for both 2024 and 2025 tax years. 153 tests passing.
 
 See `CHANGELOG.md` and `docs/status.md` for current progress.
 
