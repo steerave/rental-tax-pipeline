@@ -11,15 +11,14 @@ Unknown descriptions fall back to "other" with a console warning.
 from __future__ import annotations
 
 from collections import Counter
-from decimal import Decimal
 from pathlib import Path
 from typing import Any, Dict, List
 
 from taxauto.reconcile.margarete_sheet import (
-    _map_expense_type,
-    _map_property,
-    _parse_amount,
-    _parse_margarete_date,
+    map_expense_type,
+    map_property,
+    parse_amount,
+    parse_margarete_date,
     load_margarete_sheet,
 )
 
@@ -45,24 +44,24 @@ def _rows_to_items(rows: List[Dict[str, Any]], year: int) -> List[dict]:
     for row in rows:
         # Year filter — skip rows whose date is from a different year
         raw_date = str(row.get("Date", ""))
-        parsed_date = _parse_margarete_date(raw_date)
+        parsed_date = parse_margarete_date(raw_date)
         if parsed_date is not None and parsed_date.year != year:
             skipped += 1
             continue
 
-        amount = _parse_amount(row.get("Cost"))
+        amount = parse_amount(row.get("Cost"))
         if amount is None:
             continue
 
         type_str = str(row.get("Type", ""))
-        category, prop = _map_property(type_str)
+        category, prop = map_property(type_str)
 
         if category in ("Skip", None):
             skipped += 1
             continue
 
         desc_str = str(row.get("Description", ""))
-        expense_type = _map_expense_type(desc_str)
+        expense_type = map_expense_type(desc_str)
         if not expense_type:
             expense_type = "other"
             unmapped[desc_str] += 1

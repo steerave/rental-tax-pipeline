@@ -55,7 +55,7 @@ _EXPENSE_TYPE_MAP: Dict[str, str] = {
 _AMBIGUOUS_EXPENSE = {"service"}
 
 
-def _parse_margarete_date(raw: str) -> Optional[date]:
+def parse_margarete_date(raw: str) -> Optional[date]:
     """Parse M/D/YY or M/D/YYYY date strings."""
     raw = raw.strip()
     if not raw:
@@ -72,7 +72,7 @@ def _parse_margarete_date(raw: str) -> Optional[date]:
         return None
 
 
-def _parse_amount(raw: Any) -> Optional[Decimal]:
+def parse_amount(raw: Any) -> Optional[Decimal]:
     """Parse amount from Margarete's sheet (may be int, float, or string)."""
     if raw is None or raw == "":
         return None
@@ -83,7 +83,7 @@ def _parse_amount(raw: Any) -> Optional[Decimal]:
         return None
 
 
-def _map_property(type_str: str) -> Tuple[Optional[str], Optional[str]]:
+def map_property(type_str: str) -> Tuple[Optional[str], Optional[str]]:
     """Map Margarete's Type column to (category, property).
 
     Returns (category, property) tuple.  category=None means use default STR.
@@ -99,7 +99,7 @@ def _map_property(type_str: str) -> Tuple[Optional[str], Optional[str]]:
     return (None, None)
 
 
-def _map_expense_type(desc_str: str) -> str:
+def map_expense_type(desc_str: str) -> str:
     """Map Margarete's Description column to an Expense Type."""
     key = desc_str.strip().lower()
     if key in _AMBIGUOUS_EXPENSE:
@@ -143,10 +143,10 @@ def reconcile_against_margarete(
     # Build an index of Margarete rows by date for fast lookup
     marg_by_date: Dict[date, List[Tuple[int, Dict[str, Any]]]] = {}
     for i, row in enumerate(margarete_rows):
-        d = _parse_margarete_date(str(row.get("Date", "")))
+        d = parse_margarete_date(str(row.get("Date", "")))
         if d is None:
             continue
-        amt = _parse_amount(row.get("Cost"))
+        amt = parse_amount(row.get("Cost"))
         if amt is None:
             continue
         marg_by_date.setdefault(d, []).append((i, row))
@@ -164,7 +164,7 @@ def reconcile_against_margarete(
         except (ValueError, TypeError):
             continue
 
-        txn_amount = _parse_amount(txn.get("amount"))
+        txn_amount = parse_amount(txn.get("amount"))
         if txn_amount is None:
             continue
 
@@ -180,7 +180,7 @@ def reconcile_against_margarete(
         for mi, mrow in candidates:
             if mi in used_marg:
                 continue
-            marg_amt = _parse_amount(mrow.get("Cost"))
+            marg_amt = parse_amount(mrow.get("Cost"))
             if marg_amt is None:
                 continue
             if abs(abs_txn_amount - marg_amt) > amount_tolerance:
@@ -202,8 +202,8 @@ def reconcile_against_margarete(
         type_str = str(mrow.get("Type", ""))
         desc_str = str(mrow.get("Description", ""))
 
-        category, prop = _map_property(type_str)
-        expense_type = _map_expense_type(desc_str)
+        category, prop = map_property(type_str)
+        expense_type = map_expense_type(desc_str)
 
         if category is None:
             # Unknown property type — still fill expense type if available
