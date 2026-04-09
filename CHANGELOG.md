@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- `build-str` command: builds the STR P&L workbook directly from Margarete's expense Google Sheet, bypassing the full extract/categorize/review pipeline. Reads expenses from the "YYYY tax info" tab (property + expense-type mapping), STR revenue from the 4 earnings Google Sheets, and interest expense from `interest_expense.yaml`. Useful when the bookkeeper's sheet is the authoritative expense record for the year.
+- `margarete_expenses` source module (`taxauto.sources.margarete_expenses`): pure row-to-items converter that maps Margarete's property/description labels to template categories. STR-Split rows are expanded to 4 items (amount ÷ 4 each). Unknown descriptions fall back to "other" with a console warning.
 - Chase checking parser: handle FEES section (separate from Electronic Withdrawals) and check lines where OCR drops the check number. Fixes 4 statement parse failures for 2025 (March fees, May/June/September missing check numbers).
 - Margarete sheet reconciliation module (`taxauto.reconcile.margarete_sheet`): matches review-queue transactions against Margarete's 493-row expense worksheet by date + amount, then maps her property names and expense descriptions to pipeline dropdown values.
 - Review push pre-fill: `review push` now pre-populates Category, Property, and Expense Type columns from Margarete's matched data. Both transaction rows and vendor rows (when all transactions agree) are pre-filled.

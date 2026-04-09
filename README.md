@@ -24,6 +24,7 @@ This project automates everything except the irreducible judgment calls.
 - **Vendor categorizer** — applies `vendor_mapping.yaml`; known vendors auto-tag, unknown or ambiguous vendors go to review. Automatically skips STR income deposits (Airbnb/Vrbo), LTR owner disbursements (Rent QC), Etsy payouts, and credit card payment entries from the review queue since these are already captured by dedicated data sources.
 - **Chase checking FEES section** — parses bank service fees as a separate section (distinct from Electronic Withdrawals) and handles OCR-dropped check numbers with a fallback regex.
 - **Margarete sheet reconciliation** — matches review-queue transactions against a bookkeeper's manually-categorized expense worksheet by date + amount, then maps property names and expense descriptions to pipeline dropdown values. Pre-fills Category, Property, and Expense Type on both transaction and vendor rows in the review Sheet.
+- **Direct-from-bookkeeper STR build** — when the bookkeeper's expense sheet is the authoritative source for the year, `build-str` skips the entire extract/categorize/review pipeline and builds the STR P&L workbook directly from the Google Sheet. STR revenue still comes from the 4 earnings sheets; interest expense from `interest_expense.yaml`.
 - **Google Sheets review roundtrip** — pushes unknowns to a Sheet with dropdown validation, pulls tagged decisions back. Year-specific tab names (e.g. "Vendors 2025") allow multiple years to coexist. Standalone formatting script applies dropdown validation (Category, Property, Expense Type), frozen/bold headers, column widths, currency formatting, editable-column highlighting, alternating row colors, and auto-filters.
 - **Cross-year learning** — every human decision is written back to `vendor_mapping.yaml` with provenance. Ambiguous vendors (same vendor seen in multiple categories) are flagged forever and never auto-tagged.
 - **Prior-year bootstrap** — mines completed filed spreadsheets and Rent QC reports to pre-populate the vendor map (68 vendors learned from 2024 Rent QC data).
@@ -57,6 +58,9 @@ taxauto review pull --year 2025
 
 # Run guards and fill accountant templates
 taxauto build --year 2025
+
+# Build STR workbook directly from bookkeeper's expense sheet (skips extract/review)
+taxauto build-str --year 2025
 
 # Compare generated workbooks against filed originals
 taxauto verify --year 2025
@@ -170,7 +174,7 @@ rental-tax-pipeline/
 
 ## Status
 
-Pipeline is complete and running for both 2024 and 2025 tax years. 153 tests passing.
+Pipeline is complete and running for both 2024 and 2025 tax years. 163 tests passing.
 
 See `CHANGELOG.md` and `docs/status.md` for current progress.
 
