@@ -700,6 +700,91 @@ def cmd_build(cfg: Config, year: int) -> int:
     return 0
 
 
+def cmd_build_str(cfg: Config, year: int) -> int:
+    """Build the STR workbook directly from Margarete's expense sheet."""
+    from taxauto.aggregate.by_property import aggregate_by_property
+    from taxauto.sources.interest_expense import load_interest_expense
+    from taxauto.sources.margarete_expenses import load_str_expenses_from_margarete
+    from taxauto.sources.str_sheets import (
+        load_str_earnings_from_gsheets,
+        load_str_earnings_from_xlsx,
+        total_net_payout_by_property,
+    )
+    from taxauto.writers.str_writer import write_str_workbook
+
+    paths = cfg.paths_for_year(year)
+
+    if not cfg.google_service_account_json:
+        print("[build-str] ERROR: GOOGLE_SERVICE_ACCOUNT_JSON not set in .env")
+        return 1
+    sa_path = Path(cfg.google_service_account_json)
+    if not sa_path.exists():
+        print(f"[build-str] ERROR: service account not found at {sa_path}")
+        return 1
+
+    # 1. Expenses from Margarete's sheet
+    print("[build-str] loading expenses from Margarete's sheet...")
+    str_items = load_str_expenses_from_margarete(sa_path, year=year)
+
+    # 2. Revenue from STR earnings sheets
+    str_sheet_configs = cfg.raw.get("str_sheets") or {}
+    if str_sheet_configs:
+        print(f"[build-str] loading STR earnings from {len(str_sheet_configs)} Google Sheets...")
+        str_earnings = load_str_earnings_from_gsheets(
+            str_sheet_configs,
+            service_account_json=sa_path,
+            year=year,
+        )
+        str_by_property = total_net_payout_by_property(str_earnings)
+        for prop, total in sorted(str_by_property.items()):
+            print(f"[build-str]   {prop}: ${total:,.2f}")
+    else:
+        str_xlsx_path = paths.inputs / "str_earnings.xlsx"
+        if str_xlsx_path.exists():
+            str_earnings = load_str_earnings_from_xlsx(str_xlsx_path)
+            str_by_property = total_net_payout_by_property(str_earnings)
+        else:
+            str_by_property = {}
+
+    for prop_name, net in str_by_property.items():
+        str_items.append({
+            "property": prop_name,
+            "template_category": "Sales revenue",
+            "amount": net,
+        })
+
+    # 3. Interest expense
+    interest_path = cfg.project_root / "interest_expense.yaml"
+    print("[build-str] loading interest expense...")
+    interest_by_property = load_interest_expense(interest_path, year=year)
+    for prop, amount in interest_by_property.items():
+        str_items.append({
+            "property": prop,
+            "template_category": "Interest expense",
+            "amount": amount,
+        })
+
+    # 4. Aggregate and write workbook
+    str_totals = aggregate_by_property(str_items)
+    paths.outputs.mkdir(parents=True, exist_ok=True)
+
+    str_template = cfg.template_str
+    if not str_template.exists():
+        print(f"[build-str] ERROR: STR template not found at {str_template}")
+        return 1
+
+    str_out = paths.outputs / f"{year} - STR - Income Expense summary_generated.xlsx"
+    print(f"[build-str] writing STR workbook → {str_out}")
+    write_str_workbook(
+        template_path=str_template,
+        output_path=str_out,
+        per_property_totals=str_totals,
+        year=year,
+    )
+    print("[build-str] done.")
+    return 0
+
+
 def cmd_verify(cfg: Config, year: int) -> int:
     """Compare generated output against filed XLSX and print a delta report."""
     from taxauto.verify.compare import compare_workbooks, format_comparison_table
@@ -782,6 +867,7 @@ def _build_parser() -> argparse.ArgumentParser:
     add_year(sub.add_parser("extract"))
     add_year(sub.add_parser("categorize"))
     add_year(sub.add_parser("build"))
+    add_year(sub.add_parser("build-str"))
     add_year(sub.add_parser("verify"))
     add_year(sub.add_parser("bootstrap"))
 
@@ -806,6 +892,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         return cmd_categorize(cfg, year)
     if args.command == "build":
         return cmd_build(cfg, year)
+    if args.command == "build-str":
+        return cmd_build_str(cfg, year)
     if args.command == "verify":
         return cmd_verify(cfg, year)
     if args.command == "bootstrap":
