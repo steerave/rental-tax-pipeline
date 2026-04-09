@@ -1,7 +1,7 @@
 """Tests for the build-str CLI subcommand wiring."""
 
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 from taxauto.cli import main
 
 

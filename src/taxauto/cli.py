@@ -724,7 +724,11 @@ def cmd_build_str(cfg: Config, year: int) -> int:
 
     # 1. Expenses from Margarete's sheet
     print("[build-str] loading expenses from Margarete's sheet...")
-    str_items = load_str_expenses_from_margarete(sa_path, year=year)
+    str_items = load_str_expenses_from_margarete(
+        sa_path,
+        year=year,
+        tab_name=f"{year} tax info",
+    )
 
     # 2. Revenue from STR earnings sheets
     str_sheet_configs = cfg.raw.get("str_sheets") or {}
