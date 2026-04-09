@@ -49,10 +49,13 @@ _EXPENSE_TYPE_MAP: Dict[str, str] = {
     "maintenance": "Repairs and Maintenance",
     "repair": "Repairs and Maintenance",
     "hoa": "HOA",
+    "service": "Commissions/Service Fees",
+    "renovation": "Renovations",
+    "renovations": "Renovations",
 }
 
 # Ambiguous — leave blank for manual review
-_AMBIGUOUS_EXPENSE = {"service"}
+_AMBIGUOUS_EXPENSE: set = set()
 
 
 def parse_margarete_date(raw: str) -> Optional[date]:
