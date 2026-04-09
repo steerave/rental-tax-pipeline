@@ -4,7 +4,9 @@ Reads her expense worksheet and converts each row to an aggregation-ready
 item: {property, template_category, amount (positive Decimal)}.
 
 STR-Split rows are expanded to 4 items (amount ÷ 4 each).
-Home Office and unknown property types are discarded.
+Type-level overrides (_TYPE_OVERRIDES) force specific category + expense_type
+for Type values that don't map to a single property (e.g. storefront, home office).
+Truly unknown Type values are discarded.
 Unknown descriptions fall back to "other" with a console warning.
 """
 
@@ -28,6 +30,15 @@ _STR_PROPERTIES = [
     "20 Valleywood Ln",
     "17 Oak Glen",
 ]
+
+# Type values that override map_property + map_expense_type in this source context.
+# These are Type column values that aren't single properties but still represent
+# STR expenses we want to capture. Format: lowercased_type -> (category, expense_type)
+_TYPE_OVERRIDES: Dict[str, tuple] = {
+    "storefront": ("STR - Split", "Advertising"),
+    "home office": ("STR - Split", "other"),
+    "transportation": ("STR - Split", "Travel"),
+}
 
 
 def _rows_to_items(rows: List[Dict[str, Any]], year: int) -> List[dict]:
@@ -54,17 +65,21 @@ def _rows_to_items(rows: List[Dict[str, Any]], year: int) -> List[dict]:
             continue
 
         type_str = str(row.get("Type", ""))
-        category, prop = map_property(type_str)
+        type_key = type_str.strip().lower()
 
-        if category in ("Skip", None):
-            skipped += 1
-            continue
-
-        desc_str = str(row.get("Description", ""))
-        expense_type = map_expense_type(desc_str)
-        if not expense_type:
-            expense_type = "other"
-            unmapped[desc_str] += 1
+        if type_key in _TYPE_OVERRIDES:
+            category, expense_type = _TYPE_OVERRIDES[type_key]
+            prop = None
+        else:
+            category, prop = map_property(type_str)
+            if category in ("Skip", None):
+                skipped += 1
+                continue
+            desc_str = str(row.get("Description", ""))
+            expense_type = map_expense_type(desc_str)
+            if not expense_type:
+                expense_type = "other"
+                unmapped[desc_str] += 1
 
         if category == "STR - Split":
             split_amount = amount / len(_STR_PROPERTIES)

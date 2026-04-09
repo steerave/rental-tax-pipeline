@@ -26,10 +26,33 @@ def test_split_row_expands_to_four():
         assert item["amount"] == Decimal("100.00")
 
 
-def test_home_office_is_skipped():
-    rows = [{"Date": "1/10/2025", "Cost": "50.00", "Type": "home office", "Description": "supplies", "Source": "Chase"}]
+def test_home_office_splits_as_other():
+    rows = [{"Date": "1/10/2025", "Cost": "80.00", "Type": "home office", "Description": "supplies", "Source": "Chase"}]
     items = _rows_to_items(rows, year=2025)
-    assert items == []
+    assert len(items) == 4
+    assert {i["property"] for i in items} == set(STR_PROPS)
+    for item in items:
+        assert item["template_category"] == "other"
+        assert item["amount"] == Decimal("20.00")
+
+
+def test_storefront_splits_as_advertising():
+    rows = [{"Date": "3/5/2025", "Cost": "400.00", "Type": "storefront", "Description": "service", "Source": "Chase"}]
+    items = _rows_to_items(rows, year=2025)
+    assert len(items) == 4
+    assert {i["property"] for i in items} == set(STR_PROPS)
+    for item in items:
+        assert item["template_category"] == "Advertising"
+        assert item["amount"] == Decimal("100.00")
+
+
+def test_transportation_splits_as_travel():
+    rows = [{"Date": "7/4/2025", "Cost": "120.00", "Type": "transportation", "Description": "gas", "Source": "Chase"}]
+    items = _rows_to_items(rows, year=2025)
+    assert len(items) == 4
+    for item in items:
+        assert item["template_category"] == "Travel"
+        assert item["amount"] == Decimal("30.00")
 
 
 def test_unknown_property_type_is_skipped():
