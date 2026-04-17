@@ -1,5 +1,30 @@
 # Daily Status Log
 
+## 2026-04-17
+
+**Done:**
+- Re-ran `reconcile_margarete_v2.py` after Margarete added missing STR expense entries to her 2025 sheet — 386 rows updated, match rate 72.1% (631/875)
+- Diagnosed and reported 24 skipped rows in `build-str` (22 LTR utility rows now handled separately, 2 wrong-year entries fixed by Margarete)
+- Fixed Unicode encoding crash in `build-str` print statement (`→` → `->`)
+- Added `supplemental_ltr_expenses.yaml` + `src/taxauto/sources/supplemental_ltr.py` for direct-pay LTR expenses not in Rent QC; wired into `cmd_build`
+- Reversed the supplemental LTR utility entries after confirming they were duplicates of STR water bills
+- Added `taxauto build-report --year YYYY` command: fills `Rental-Properties.xlsx` template from STR + LTR generated workbooks; output is `{year} - Rental-Properties_generated.xlsx`
+- Created `~/.claude/skills/rental-report/SKILL.md` for future reuse
+
+**In Progress:**
+- Margarete's 2025 sheet still has 1 blank-Type row (5/21, "supplies & maintenance") — needs property filled in
+
+**Next:**
+- Confirm August LTR utility gap with Margarete (no entries for Aug in her sheet)
+- Re-run `build-str --year 2025` and `build-report --year 2025` after Margarete fills blank-Type row
+- Add `build-ltr` command to prevent `build` from accidentally overwriting STR workbook with empty data
+- Continue 2024 review: tag remaining ~244 untagged transactions, then `review pull → build → verify`
+
+**Notes:**
+- `build` overwrites the STR workbook with empty expenses when `resolved_decisions.json` is missing — always use `build-str` for STR, not `build`
+- `supplemental_ltr_expenses.yaml` is the right place for any direct-pay LTR expenses not captured by Rent QC
+- `Rental-Properties.xlsx` template lives in `years/2024/outputs/` and is never modified — always used read-only
+
 ## 2026-04-06
 
 ### Done
